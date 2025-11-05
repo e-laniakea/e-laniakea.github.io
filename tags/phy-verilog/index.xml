@@ -1,26 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>LANIAKEA</title>
-    <link>https://localhost:1313/</link>
-    <description>Recent content on LANIAKEA</description>
+    <title>Phy Verilog on LANIAKEA</title>
+    <link>https://localhost:1313/tags/phy-verilog/</link>
+    <description>Recent content in Phy Verilog on LANIAKEA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <managingEditor>nuno@n9o.xyz (LANIAKEA)</managingEditor>
     <webMaster>nuno@n9o.xyz (LANIAKEA)</webMaster>
     <copyright>© 2025 LANIAKEA</copyright>
-    <lastBuildDate>Sun, 31 Aug 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
-    
-    <item>
-      <title>Bilinear Image Scaling in Verilog: Bilinear Interpolation Explanation</title>
-      <link>https://localhost:1313/docs/hello-world/</link>
-      <pubDate>Sun, 31 Aug 2025 00:00:00 +0000</pubDate>
-      <author>nuno@n9o.xyz (LANIAKEA)</author>
-      <guid>https://localhost:1313/docs/hello-world/</guid>
-      <description>&lt;p&gt;Bilinear interpolation 是一种在嵌入式和 FPGA 上都很实用的图像缩放方法。&lt;br&gt;
-每个输出像素由源图像中最近的四个像素加权平均得到，比最近邻平滑得多，又比高阶滤波器便宜很多。&lt;/p&gt;</description>
-      
-    </item>
+    <lastBuildDate>Sun, 31 Aug 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://localhost:1313/tags/phy-verilog/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>MDIO 接口介绍</title>

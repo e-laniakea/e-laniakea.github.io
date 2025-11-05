@@ -53,6 +53,30 @@
     />
   </url>
   <url>
+    <loc>https://localhost:1313/tags/mdio-verilog/</loc>
+    <lastmod>2025-08-31T00:00:00+00:00</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://localhost:1313/docs/mdio/</loc>
+    <lastmod>2025-08-31T00:00:00+00:00</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://localhost:1313/tags/phy/</loc>
+    <lastmod>2025-08-31T00:00:00+00:00</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://localhost:1313/tags/phy-verilog/</loc>
+    <lastmod>2025-08-31T00:00:00+00:00</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://localhost:1313/tags/scaler-verilog/</loc>
     <lastmod>2025-08-31T00:00:00+00:00</lastmod>
     <changefreq>always</changefreq>
@@ -87,11 +111,6 @@
   <url>
     <loc>https://localhost:1313/tags/video-scaling/</loc>
     <lastmod>2025-08-31T00:00:00+00:00</lastmod>
-    <changefreq>always</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://localhost:1313/docs/mdio/</loc>
     <changefreq>always</changefreq>
     <priority>0.5</priority>
   </url>
