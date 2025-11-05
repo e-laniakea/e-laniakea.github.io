@@ -91,6 +91,11 @@
     <priority>0.5</priority>
   </url>
   <url>
+    <loc>https://localhost:1313/docs/mdio/</loc>
+    <changefreq>always</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://localhost:1313/authors/</loc>
     <changefreq>always</changefreq>
     <priority>0.5</priority>
