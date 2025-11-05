@@ -28,31 +28,6 @@
     />
   </url>
   <url>
-    <loc>https://localhost:1313/it/</loc>
-    <changefreq>always</changefreq>
-    <priority>0.5</priority>
-    <xhtml:link
-      rel="alternate"
-      hreflang="en"
-      href="https://localhost:1313/"
-    />
-    <xhtml:link
-      rel="alternate"
-      hreflang="ja"
-      href="https://localhost:1313/ja/"
-    />
-    <xhtml:link
-      rel="alternate"
-      hreflang="zh-cn"
-      href="https://localhost:1313/zh-cn/"
-    />
-    <xhtml:link
-      rel="alternate"
-      hreflang="it"
-      href="https://localhost:1313/it/"
-    />
-  </url>
-  <url>
     <loc>https://localhost:1313/it/categories/</loc>
     <changefreq>always</changefreq>
     <priority>0.5</priority>
@@ -75,6 +50,31 @@
       rel="alternate"
       hreflang="it"
       href="https://localhost:1313/it/categories/"
+    />
+  </url>
+  <url>
+    <loc>https://localhost:1313/it/</loc>
+    <changefreq>always</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link
+      rel="alternate"
+      hreflang="en"
+      href="https://localhost:1313/"
+    />
+    <xhtml:link
+      rel="alternate"
+      hreflang="ja"
+      href="https://localhost:1313/ja/"
+    />
+    <xhtml:link
+      rel="alternate"
+      hreflang="zh-cn"
+      href="https://localhost:1313/zh-cn/"
+    />
+    <xhtml:link
+      rel="alternate"
+      hreflang="it"
+      href="https://localhost:1313/it/"
     />
   </url>
   <url>
