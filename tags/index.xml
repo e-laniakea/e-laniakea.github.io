@@ -9,7 +9,57 @@
     <managingEditor>nuno@n9o.xyz (LANIAKEA)</managingEditor>
     <webMaster>nuno@n9o.xyz (LANIAKEA)</webMaster>
     <copyright>© 2025 LANIAKEA</copyright>
-    <lastBuildDate>Sun, 31 Aug 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 06 Nov 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>ARP</title>
+      <link>https://localhost:1313/tags/arp/</link>
+      <pubDate>Thu, 06 Nov 2025 00:00:00 +0000</pubDate>
+      <author>nuno@n9o.xyz (LANIAKEA)</author>
+      <guid>https://localhost:1313/tags/arp/</guid>
+      <description></description>
+      
+    </item>
+    
+    <item>
+      <title>FPGA</title>
+      <link>https://localhost:1313/tags/fpga/</link>
+      <pubDate>Thu, 06 Nov 2025 00:00:00 +0000</pubDate>
+      <author>nuno@n9o.xyz (LANIAKEA)</author>
+      <guid>https://localhost:1313/tags/fpga/</guid>
+      <description></description>
+      
+    </item>
+    
+    <item>
+      <title>IPv4</title>
+      <link>https://localhost:1313/tags/ipv4/</link>
+      <pubDate>Thu, 06 Nov 2025 00:00:00 +0000</pubDate>
+      <author>nuno@n9o.xyz (LANIAKEA)</author>
+      <guid>https://localhost:1313/tags/ipv4/</guid>
+      <description></description>
+      
+    </item>
+    
+    <item>
+      <title>Verilog</title>
+      <link>https://localhost:1313/tags/verilog/</link>
+      <pubDate>Thu, 06 Nov 2025 00:00:00 +0000</pubDate>
+      <author>nuno@n9o.xyz (LANIAKEA)</author>
+      <guid>https://localhost:1313/tags/verilog/</guid>
+      <description></description>
+      
+    </item>
+    
+    <item>
+      <title>以太网</title>
+      <link>https://localhost:1313/tags/%E4%BB%A5%E5%A4%AA%E7%BD%91/</link>
+      <pubDate>Thu, 06 Nov 2025 00:00:00 +0000</pubDate>
+      <author>nuno@n9o.xyz (LANIAKEA)</author>
+      <guid>https://localhost:1313/tags/%E4%BB%A5%E5%A4%AA%E7%BD%91/</guid>
+      <description></description>
+      
+    </item>
     
     <item>
       <title>Bilinear Verilog</title>
