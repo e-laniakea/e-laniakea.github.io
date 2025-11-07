@@ -39,7 +39,8 @@
       <pubDate>Sun, 31 Aug 2025 00:00:00 +0000</pubDate>
       <author>nuno@n9o.xyz (LANIAKEA)</author>
       <guid>https://localhost:1313/docs/hello-world/</guid>
-      <description>&lt;p&gt;Bilinear interpolation 是一种在嵌入式和 FPGA 上都很实用的图像缩放方法。&lt;br&gt;
+      <description>&lt;hr&gt;
+&lt;p&gt;Bilinear interpolation 是一种在嵌入式和 FPGA 上都很实用的图像缩放方法。&lt;br&gt;
 每个输出像素由源图像中最近的四个像素加权平均得到，比最近邻平滑得多，又比高阶滤波器便宜很多。&lt;/p&gt;</description>
       
     </item>
