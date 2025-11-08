@@ -2,131 +2,131 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on LANIAKEA</title>
-    <link>https://localhost:1313/tags/</link>
+    <link>https://e-laniakea.github.io/tags/</link>
     <description>Recent content in Tags on LANIAKEA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <managingEditor>nuno@n9o.xyz (LANIAKEA)</managingEditor>
     <webMaster>nuno@n9o.xyz (LANIAKEA)</webMaster>
     <copyright>© 2025 LANIAKEA</copyright>
-    <lastBuildDate>Thu, 06 Nov 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 06 Nov 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://e-laniakea.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>ARP</title>
-      <link>https://localhost:1313/tags/arp/</link>
+      <link>https://e-laniakea.github.io/tags/arp/</link>
       <pubDate>Thu, 06 Nov 2025 00:00:00 +0000</pubDate>
       <author>nuno@n9o.xyz (LANIAKEA)</author>
-      <guid>https://localhost:1313/tags/arp/</guid>
+      <guid>https://e-laniakea.github.io/tags/arp/</guid>
       <description></description>
       
     </item>
     
     <item>
       <title>FPGA</title>
-      <link>https://localhost:1313/tags/fpga/</link>
+      <link>https://e-laniakea.github.io/tags/fpga/</link>
       <pubDate>Thu, 06 Nov 2025 00:00:00 +0000</pubDate>
       <author>nuno@n9o.xyz (LANIAKEA)</author>
-      <guid>https://localhost:1313/tags/fpga/</guid>
+      <guid>https://e-laniakea.github.io/tags/fpga/</guid>
       <description></description>
       
     </item>
     
     <item>
       <title>IPv4</title>
-      <link>https://localhost:1313/tags/ipv4/</link>
+      <link>https://e-laniakea.github.io/tags/ipv4/</link>
       <pubDate>Thu, 06 Nov 2025 00:00:00 +0000</pubDate>
       <author>nuno@n9o.xyz (LANIAKEA)</author>
-      <guid>https://localhost:1313/tags/ipv4/</guid>
+      <guid>https://e-laniakea.github.io/tags/ipv4/</guid>
       <description></description>
       
     </item>
     
     <item>
       <title>Verilog</title>
-      <link>https://localhost:1313/tags/verilog/</link>
+      <link>https://e-laniakea.github.io/tags/verilog/</link>
       <pubDate>Thu, 06 Nov 2025 00:00:00 +0000</pubDate>
       <author>nuno@n9o.xyz (LANIAKEA)</author>
-      <guid>https://localhost:1313/tags/verilog/</guid>
+      <guid>https://e-laniakea.github.io/tags/verilog/</guid>
       <description></description>
       
     </item>
     
     <item>
       <title>以太网</title>
-      <link>https://localhost:1313/tags/%E4%BB%A5%E5%A4%AA%E7%BD%91/</link>
+      <link>https://e-laniakea.github.io/tags/%E4%BB%A5%E5%A4%AA%E7%BD%91/</link>
       <pubDate>Thu, 06 Nov 2025 00:00:00 +0000</pubDate>
       <author>nuno@n9o.xyz (LANIAKEA)</author>
-      <guid>https://localhost:1313/tags/%E4%BB%A5%E5%A4%AA%E7%BD%91/</guid>
+      <guid>https://e-laniakea.github.io/tags/%E4%BB%A5%E5%A4%AA%E7%BD%91/</guid>
       <description></description>
       
     </item>
     
     <item>
       <title>Bilinear Verilog</title>
-      <link>https://localhost:1313/tags/bilinear-verilog/</link>
+      <link>https://e-laniakea.github.io/tags/bilinear-verilog/</link>
       <pubDate>Sun, 31 Aug 2025 00:00:00 +0000</pubDate>
       <author>nuno@n9o.xyz (LANIAKEA)</author>
-      <guid>https://localhost:1313/tags/bilinear-verilog/</guid>
+      <guid>https://e-laniakea.github.io/tags/bilinear-verilog/</guid>
       <description></description>
       
     </item>
     
     <item>
       <title>Bilinear-Image-Scaling</title>
-      <link>https://localhost:1313/tags/bilinear-image-scaling/</link>
+      <link>https://e-laniakea.github.io/tags/bilinear-image-scaling/</link>
       <pubDate>Sun, 31 Aug 2025 00:00:00 +0000</pubDate>
       <author>nuno@n9o.xyz (LANIAKEA)</author>
-      <guid>https://localhost:1313/tags/bilinear-image-scaling/</guid>
+      <guid>https://e-laniakea.github.io/tags/bilinear-image-scaling/</guid>
       <description></description>
       
     </item>
     
     <item>
       <title>Mdio Verilog</title>
-      <link>https://localhost:1313/tags/mdio-verilog/</link>
+      <link>https://e-laniakea.github.io/tags/mdio-verilog/</link>
       <pubDate>Sun, 31 Aug 2025 00:00:00 +0000</pubDate>
       <author>nuno@n9o.xyz (LANIAKEA)</author>
-      <guid>https://localhost:1313/tags/mdio-verilog/</guid>
+      <guid>https://e-laniakea.github.io/tags/mdio-verilog/</guid>
       <description></description>
       
     </item>
     
     <item>
       <title>Phy</title>
-      <link>https://localhost:1313/tags/phy/</link>
+      <link>https://e-laniakea.github.io/tags/phy/</link>
       <pubDate>Sun, 31 Aug 2025 00:00:00 +0000</pubDate>
       <author>nuno@n9o.xyz (LANIAKEA)</author>
-      <guid>https://localhost:1313/tags/phy/</guid>
+      <guid>https://e-laniakea.github.io/tags/phy/</guid>
       <description></description>
       
     </item>
     
     <item>
       <title>Phy Verilog</title>
-      <link>https://localhost:1313/tags/phy-verilog/</link>
+      <link>https://e-laniakea.github.io/tags/phy-verilog/</link>
       <pubDate>Sun, 31 Aug 2025 00:00:00 +0000</pubDate>
       <author>nuno@n9o.xyz (LANIAKEA)</author>
-      <guid>https://localhost:1313/tags/phy-verilog/</guid>
+      <guid>https://e-laniakea.github.io/tags/phy-verilog/</guid>
       <description></description>
       
     </item>
     
     <item>
       <title>Scaler Verilog</title>
-      <link>https://localhost:1313/tags/scaler-verilog/</link>
+      <link>https://e-laniakea.github.io/tags/scaler-verilog/</link>
       <pubDate>Sun, 31 Aug 2025 00:00:00 +0000</pubDate>
       <author>nuno@n9o.xyz (LANIAKEA)</author>
-      <guid>https://localhost:1313/tags/scaler-verilog/</guid>
+      <guid>https://e-laniakea.github.io/tags/scaler-verilog/</guid>
       <description></description>
       
     </item>
     
     <item>
       <title>Video Scaling</title>
-      <link>https://localhost:1313/tags/video-scaling/</link>
+      <link>https://e-laniakea.github.io/tags/video-scaling/</link>
       <pubDate>Sun, 31 Aug 2025 00:00:00 +0000</pubDate>
       <author>nuno@n9o.xyz (LANIAKEA)</author>
-      <guid>https://localhost:1313/tags/video-scaling/</guid>
+      <guid>https://e-laniakea.github.io/tags/video-scaling/</guid>
       <description></description>
       
     </item>

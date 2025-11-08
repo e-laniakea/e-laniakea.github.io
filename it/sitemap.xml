@@ -3,128 +3,128 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
 
   <url>
-    <loc>https://localhost:1313/it/authors/</loc>
+    <loc>https://e-laniakea.github.io/it/authors/</loc>
     <changefreq>always</changefreq>
     <priority>0.5</priority>
     <xhtml:link
       rel="alternate"
       hreflang="en"
-      href="https://localhost:1313/authors/"
+      href="https://e-laniakea.github.io/authors/"
     />
     <xhtml:link
       rel="alternate"
       hreflang="ja"
-      href="https://localhost:1313/ja/authors/"
+      href="https://e-laniakea.github.io/ja/authors/"
     />
     <xhtml:link
       rel="alternate"
       hreflang="zh-cn"
-      href="https://localhost:1313/zh-cn/authors/"
+      href="https://e-laniakea.github.io/zh-cn/authors/"
     />
     <xhtml:link
       rel="alternate"
       hreflang="it"
-      href="https://localhost:1313/it/authors/"
+      href="https://e-laniakea.github.io/it/authors/"
     />
   </url>
   <url>
-    <loc>https://localhost:1313/it/categories/</loc>
+    <loc>https://e-laniakea.github.io/it/categories/</loc>
     <changefreq>always</changefreq>
     <priority>0.5</priority>
     <xhtml:link
       rel="alternate"
       hreflang="en"
-      href="https://localhost:1313/categories/"
+      href="https://e-laniakea.github.io/categories/"
     />
     <xhtml:link
       rel="alternate"
       hreflang="ja"
-      href="https://localhost:1313/ja/categories/"
+      href="https://e-laniakea.github.io/ja/categories/"
     />
     <xhtml:link
       rel="alternate"
       hreflang="zh-cn"
-      href="https://localhost:1313/zh-cn/categories/"
+      href="https://e-laniakea.github.io/zh-cn/categories/"
     />
     <xhtml:link
       rel="alternate"
       hreflang="it"
-      href="https://localhost:1313/it/categories/"
+      href="https://e-laniakea.github.io/it/categories/"
     />
   </url>
   <url>
-    <loc>https://localhost:1313/it/</loc>
+    <loc>https://e-laniakea.github.io/it/</loc>
     <changefreq>always</changefreq>
     <priority>0.5</priority>
     <xhtml:link
       rel="alternate"
       hreflang="en"
-      href="https://localhost:1313/"
+      href="https://e-laniakea.github.io/"
     />
     <xhtml:link
       rel="alternate"
       hreflang="ja"
-      href="https://localhost:1313/ja/"
+      href="https://e-laniakea.github.io/ja/"
     />
     <xhtml:link
       rel="alternate"
       hreflang="zh-cn"
-      href="https://localhost:1313/zh-cn/"
+      href="https://e-laniakea.github.io/zh-cn/"
     />
     <xhtml:link
       rel="alternate"
       hreflang="it"
-      href="https://localhost:1313/it/"
+      href="https://e-laniakea.github.io/it/"
     />
   </url>
   <url>
-    <loc>https://localhost:1313/it/series/</loc>
+    <loc>https://e-laniakea.github.io/it/series/</loc>
     <changefreq>always</changefreq>
     <priority>0.5</priority>
     <xhtml:link
       rel="alternate"
       hreflang="en"
-      href="https://localhost:1313/series/"
+      href="https://e-laniakea.github.io/series/"
     />
     <xhtml:link
       rel="alternate"
       hreflang="ja"
-      href="https://localhost:1313/ja/series/"
+      href="https://e-laniakea.github.io/ja/series/"
     />
     <xhtml:link
       rel="alternate"
       hreflang="zh-cn"
-      href="https://localhost:1313/zh-cn/series/"
+      href="https://e-laniakea.github.io/zh-cn/series/"
     />
     <xhtml:link
       rel="alternate"
       hreflang="it"
-      href="https://localhost:1313/it/series/"
+      href="https://e-laniakea.github.io/it/series/"
     />
   </url>
   <url>
-    <loc>https://localhost:1313/it/tags/</loc>
+    <loc>https://e-laniakea.github.io/it/tags/</loc>
     <changefreq>always</changefreq>
     <priority>0.5</priority>
     <xhtml:link
       rel="alternate"
       hreflang="en"
-      href="https://localhost:1313/tags/"
+      href="https://e-laniakea.github.io/tags/"
     />
     <xhtml:link
       rel="alternate"
       hreflang="ja"
-      href="https://localhost:1313/ja/tags/"
+      href="https://e-laniakea.github.io/ja/tags/"
     />
     <xhtml:link
       rel="alternate"
       hreflang="zh-cn"
-      href="https://localhost:1313/zh-cn/tags/"
+      href="https://e-laniakea.github.io/zh-cn/tags/"
     />
     <xhtml:link
       rel="alternate"
       hreflang="it"
-      href="https://localhost:1313/it/tags/"
+      href="https://e-laniakea.github.io/it/tags/"
     />
   </url>
 </urlset>
