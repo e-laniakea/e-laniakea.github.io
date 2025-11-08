@@ -257,7 +257,7 @@
     "keywords": ["ARP","以太网","IPv4","FPGA","Verilog"],
     
     "mainEntityOfPage": "true",
-    "wordCount": "2244"
+    "wordCount": "4374"
   }]
   </script>
 
@@ -1077,7 +1077,7 @@
   <div class="flex flex-row flex-wrap items-center">
     
     
-      <span title="Reading time">5 mins</span><span class="px-2 text-primary-500">&middot;</span>
+      <span title="Reading time">9 mins</span><span class="px-2 text-primary-500">&middot;</span>
 
 
   
@@ -1354,15 +1354,8 @@
         <li><a href="#63-构造报文伪代码逻辑思路">6.3 构造报文伪代码（逻辑思路）</a></li>
       </ul>
     </li>
-    <li><a href="#7-arp-缓存模块-arp_cachev可选">7. ARP 缓存模块 arp_cache.v（可选）</a>
-      <ul>
-        <li><a href="#71-描述">7.1 描述</a></li>
-        <li><a href="#72-功能要点">7.2 功能要点</a></li>
-        <li><a href="#73-简单表结构示例">7.3 简单表结构示例</a></li>
-      </ul>
-    </li>
-    <li><a href="#8-仿真与调试建议">8. 仿真与调试建议</a></li>
-    <li><a href="#9-参考资料">9. 参考资料</a></li>
+    <li><a href="#7-仿真与调试建议">7. 仿真与调试建议</a></li>
+    <li><a href="#8-参考资料">8. 参考资料</a></li>
   </ul>
 </nav>
   </div>
@@ -1411,15 +1404,8 @@
         <li><a href="#63-构造报文伪代码逻辑思路">6.3 构造报文伪代码（逻辑思路）</a></li>
       </ul>
     </li>
-    <li><a href="#7-arp-缓存模块-arp_cachev可选">7. ARP 缓存模块 arp_cache.v（可选）</a>
-      <ul>
-        <li><a href="#71-描述">7.1 描述</a></li>
-        <li><a href="#72-功能要点">7.2 功能要点</a></li>
-        <li><a href="#73-简单表结构示例">7.3 简单表结构示例</a></li>
-      </ul>
-    </li>
-    <li><a href="#8-仿真与调试建议">8. 仿真与调试建议</a></li>
-    <li><a href="#9-参考资料">9. 参考资料</a></li>
+    <li><a href="#7-仿真与调试建议">7. 仿真与调试建议</a></li>
+    <li><a href="#8-参考资料">8. 参考资料</a></li>
   </ul>
 </nav>
   </div>
@@ -1799,41 +1785,6 @@
 <li>处理上层发起的 ARP 请求（查询指定 IP 的 MAC 地址）</li>
 <li>维护简单的 ARP 缓存表（可选）</li>
 </ul>
-<p>典型状态机划分示意：</p>
-<table>
-  <thead>
-      <tr>
-          <th>状态名</th>
-          <th>描述</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>IDLE</td>
-          <td>空闲，等待接收 ARP 帧或上层 ARP 查询请求</td>
-      </tr>
-      <tr>
-          <td>RX_PARSE</td>
-          <td>从 MAC 接收方向解析 ARP 报文字段</td>
-      </tr>
-      <tr>
-          <td>RX_HANDLE</td>
-          <td>判断是否为发往本机的 ARP 请求，准备应答</td>
-      </tr>
-      <tr>
-          <td>TX_REPLY</td>
-          <td>构造 ARP Reply 帧并从 MAC 发送</td>
-      </tr>
-      <tr>
-          <td>TX_REQ</td>
-          <td>构造 ARP Request 帧并从 MAC 发送</td>
-      </tr>
-      <tr>
-          <td>UPDATE</td>
-          <td>更新 ARP 缓存表</td>
-      </tr>
-  </tbody>
-</table>
 
 <h3 class="relative group">4.2 接口定义
     <div id="42-接口定义" class="anchor"></div>
@@ -1849,74 +1800,123 @@
       <tr>
           <th>信号名</th>
           <th>方向</th>
-          <th>描述</th>
+          <th>位宽</th>
+          <th>时钟域</th>
+          <th>说明</th>
       </tr>
   </thead>
   <tbody>
       <tr>
-          <td>clk</td>
-          <td>输入</td>
-          <td>系统时钟</td>
+          <td><code>rst_n</code></td>
+          <td>In</td>
+          <td>1</td>
+          <td>—</td>
+          <td>低电平复位，异步或同步视实现而定</td>
       </tr>
       <tr>
-          <td>rst_n</td>
-          <td>输入</td>
-          <td>复位信号，低有效</td>
+          <td><code>gmii_rx_clk</code></td>
+          <td>In</td>
+          <td>1</td>
+          <td>GMII RX 时钟</td>
+          <td>GMII 接收时钟</td>
       </tr>
       <tr>
-          <td>local_mac[47:0]</td>
-          <td>输入</td>
-          <td>本机 MAC 地址</td>
+          <td><code>gmii_rx_dv</code></td>
+          <td>In</td>
+          <td>1</td>
+          <td><code>gmii_rx_clk</code></td>
+          <td>GMII 接收数据有效</td>
       </tr>
       <tr>
-          <td>local_ip[31:0]</td>
-          <td>输入</td>
-          <td>本机 IPv4 地址</td>
+          <td><code>gmii_rxd</code></td>
+          <td>In</td>
+          <td>8</td>
+          <td><code>gmii_rx_clk</code></td>
+          <td>GMII 接收数据总线</td>
       </tr>
       <tr>
-          <td>rx_din[&hellip;]</td>
-          <td>输入</td>
-          <td>来自 MAC 的接收数据总线（如 AXI-S/GMII）</td>
+          <td><code>gmii_tx_clk</code></td>
+          <td>In</td>
+          <td>1</td>
+          <td>GMII TX 时钟</td>
+          <td>GMII 发送时钟</td>
       </tr>
       <tr>
-          <td>rx_din_valid</td>
-          <td>输入</td>
-          <td>接收数据有效标志</td>
+          <td><code>gmii_tx_en</code></td>
+          <td>Out</td>
+          <td>1</td>
+          <td><code>gmii_tx_clk</code></td>
+          <td>GMII 发送数据有效</td>
       </tr>
       <tr>
-          <td>tx_dout[&hellip;]</td>
-          <td>输出</td>
-          <td>发送给 MAC 的数据总线</td>
+          <td><code>gmii_txd</code></td>
+          <td>Out</td>
+          <td>8</td>
+          <td><code>gmii_tx_clk</code></td>
+          <td>GMII 发送数据总线</td>
       </tr>
       <tr>
-          <td>tx_dout_valid</td>
-          <td>输出</td>
-          <td>发送数据有效标志</td>
+          <td><code>arp_rx_done</code></td>
+          <td>Out</td>
+          <td>1</td>
+          <td><code>gmii_rx_clk</code></td>
+          <td>一帧 ARP 接收完成脉冲</td>
       </tr>
       <tr>
-          <td>arp_req_ip[31:0]</td>
-          <td>输入</td>
-          <td>上层发起的 ARP 查询目标 IP</td>
+          <td><code>arp_rx_type</code></td>
+          <td>Out</td>
+          <td>1</td>
+          <td><code>gmii_rx_clk</code></td>
+          <td>接收 ARP 类型：0=请求，1=应答</td>
       </tr>
       <tr>
-          <td>arp_req_valid</td>
-          <td>输入</td>
-          <td>ARP 查询请求有效</td>
+          <td><code>src_mac</code></td>
+          <td>Out</td>
+          <td>48</td>
+          <td><code>gmii_rx_clk</code></td>
+          <td>接收到的 <strong>发送端</strong> MAC 地址</td>
       </tr>
       <tr>
-          <td>arp_rsp_mac[47:0]</td>
-          <td>输出</td>
-          <td>查询结果 MAC 地址</td>
+          <td><code>src_ip</code></td>
+          <td>Out</td>
+          <td>32</td>
+          <td><code>gmii_rx_clk</code></td>
+          <td>接收到的 <strong>发送端</strong> IP 地址</td>
       </tr>
       <tr>
-          <td>arp_rsp_valid</td>
-          <td>输出</td>
-          <td>查询结果有效</td>
+          <td><code>arp_tx_en</code></td>
+          <td>In</td>
+          <td>1</td>
+          <td><code>gmii_tx_clk</code></td>
+          <td>发送 ARP 使能，上升沿触发发送</td>
       </tr>
       <tr>
-          <td>arp_hit</td>
-          <td>输出</td>
-          <td>ARP 缓存命中标志</td>
+          <td><code>arp_tx_type</code></td>
+          <td>In</td>
+          <td>1</td>
+          <td><code>gmii_tx_clk</code></td>
+          <td>发送 ARP 类型：0=请求，1=应答</td>
+      </tr>
+      <tr>
+          <td><code>target_mac</code></td>
+          <td>In</td>
+          <td>48</td>
+          <td><code>gmii_tx_clk</code></td>
+          <td>要查询/应答的目标 MAC（应答时）</td>
+      </tr>
+      <tr>
+          <td><code>target_ip</code></td>
+          <td>In</td>
+          <td>32</td>
+          <td><code>gmii_tx_clk</code></td>
+          <td>要查询/应答的目标 IP</td>
+      </tr>
+      <tr>
+          <td><code>tx_done</code></td>
+          <td>Out</td>
+          <td>1</td>
+          <td><code>gmii_tx_clk</code></td>
+          <td>一帧 ARP 发送完成脉冲</td>
       </tr>
   </tbody>
 </table>
@@ -1940,7 +1940,7 @@
     ></figure>
 <blockquote>
 <p><strong>说明：</strong>
-<code>arp_top</code> 内部可进一步拆分为 <code>arp_rx</code>（接收解析）、<code>arp_tx</code>（发送构造）、<code>arp_cache</code>（缓存表）等子模块。</p></blockquote>
+<code>arp_top</code> 内部可进一步拆分为 <code>arp_rx</code>（接收解析）、<code>arp_tx</code>（发送构造）、<code>crc32_d8</code>（校验）等子模块。</p></blockquote>
 
 <h3 class="relative group">4.4 参考 Verilog 框架
     <div id="44-参考-verilog-框架" class="anchor"></div>
@@ -1951,34 +1951,118 @@
     </span>
     
 </h3>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="k">module</span> <span class="n">arp_top</span> <span class="p">#(</span>
-</span></span><span class="line"><span class="cl">    <span class="k">parameter</span> <span class="n">DATA_WIDTH</span> <span class="o">=</span> <span class="mh">8</span>
-</span></span><span class="line"><span class="cl"><span class="p">)(</span>
-</span></span><span class="line"><span class="cl">    <span class="k">input</span>                     <span class="n">clk</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="k">input</span>                     <span class="n">rst_n</span><span class="p">,</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="k">module</span> <span class="n">arp</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">input</span>      <span class="p">[</span><span class="mh">47</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>         <span class="n">local_mac</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="k">input</span>      <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>         <span class="n">local_ip</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">#(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">parameter</span> <span class="n">FPGA_MAC</span> <span class="o">=</span> <span class="mh">48&#39;h00</span><span class="n">_11_22_33_44_55</span><span class="p">,</span>    <span class="c1">//开发板MAC地址
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">parameter</span> <span class="n">FPGA_IP</span>  <span class="o">=</span> <span class="p">{</span><span class="mh">8</span><span class="mi">&#39;d192</span><span class="p">,</span><span class="mh">8</span><span class="mi">&#39;d168</span><span class="p">,</span><span class="mh">8</span><span class="mi">&#39;d1</span><span class="p">,</span><span class="mh">8</span><span class="mi">&#39;d10</span><span class="p">},</span>   <span class="c1">//开发板IP地址
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">parameter</span> <span class="n">TARGET_MAC</span>   <span class="o">=</span> <span class="mh">48&#39;hff</span><span class="n">_ff_ff_ff_ff_ff</span><span class="p">,</span> <span class="c1">//目的MAC地址
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">parameter</span> <span class="n">TARGET_IP</span>    <span class="o">=</span> <span class="p">{</span><span class="mh">8</span><span class="mi">&#39;d192</span><span class="p">,</span><span class="mh">8</span><span class="mi">&#39;d168</span><span class="p">,</span><span class="mh">8</span><span class="mi">&#39;d1</span><span class="p">,</span><span class="mh">8</span><span class="mi">&#39;d102</span><span class="p">},</span> <span class="c1">//目的IP地址
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">parameter</span> <span class="n">ETH_TYPE</span> <span class="o">=</span> <span class="mh">16&#39;h0806</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// RX from MAC
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">input</span>      <span class="p">[</span><span class="n">DATA_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">rx_din</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="k">input</span>                     <span class="n">rx_din_valid</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>                <span class="n">rst_n</span>      <span class="p">,</span> <span class="c1">//复位信号，低电平有效
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">//GMII接口
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">input</span>                <span class="n">gmii_rx_clk</span><span class="p">,</span> <span class="c1">//GMII接收数据时钟
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">input</span>                <span class="n">gmii_rx_dv</span> <span class="p">,</span> <span class="c1">//GMII输入数据有效信号
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">input</span>        <span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">gmii_rxd</span>   <span class="p">,</span> <span class="c1">//GMII输入数据
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">input</span>                <span class="n">gmii_tx_clk</span><span class="p">,</span> <span class="c1">//GMII发送数据时钟
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="k">output</span>               <span class="n">gmii_tx_en</span> <span class="p">,</span> <span class="c1">//GMII输出数据有效信号
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">output</span>       <span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">gmii_txd</span>   <span class="p">,</span> <span class="c1">//GMII输出数据          
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="c1">//用户接口
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">output</span>               <span class="n">arp_rx_done</span><span class="p">,</span> <span class="c1">//ARP接收完成信号
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">output</span>               <span class="n">arp_rx_type</span><span class="p">,</span> <span class="c1">//ARP接收类型 0:请求  1:应答
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">output</span>       <span class="p">[</span><span class="mh">47</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>  <span class="n">src_mac</span>    <span class="p">,</span> <span class="c1">//接收到目的MAC地址
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">output</span>       <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>  <span class="n">src_ip</span>     <span class="p">,</span> <span class="c1">//接收到目的IP地址    
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>                <span class="n">arp_tx_en</span>  <span class="p">,</span> <span class="c1">//ARP发送使能信号
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">input</span>                <span class="n">arp_tx_type</span><span class="p">,</span> <span class="c1">//ARP发送类型 0:请求  1:应答
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">input</span>        <span class="p">[</span><span class="mh">47</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>  <span class="n">target_mac</span>    <span class="p">,</span> <span class="c1">//发送的目标MAC地址
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">input</span>        <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>  <span class="n">target_ip</span>     <span class="p">,</span> <span class="c1">//发送的目标IP地址
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="k">output</span>               <span class="n">tx_done</span>      <span class="c1">//以太网发送完成信号    
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">);</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// TX to MAC
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">output</span> <span class="kt">reg</span> <span class="p">[</span><span class="n">DATA_WIDTH</span><span class="o">-</span><span class="mh">1</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span> <span class="n">tx_dout</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="k">output</span> <span class="kt">reg</span>                <span class="n">tx_dout_valid</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="c1">// ARP request from upper layer
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">input</span>      <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>         <span class="n">arp_req_ip</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="k">input</span>                     <span class="n">arp_req_valid</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="k">output</span> <span class="kt">reg</span> <span class="p">[</span><span class="mh">47</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>         <span class="n">arp_rsp_mac</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="k">output</span> <span class="kt">reg</span>                <span class="n">arp_rsp_valid</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="k">output</span> <span class="kt">reg</span>                <span class="n">arp_hit</span>
+</span></span><span class="line"><span class="cl"><span class="kt">wire</span>          <span class="n">crc_en</span>  <span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">wire</span>          <span class="n">crc_clr</span> <span class="p">;</span> 
+</span></span><span class="line"><span class="cl"><span class="kt">wire</span>  <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>  <span class="n">crc_data</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">wire</span>  <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>  <span class="n">crc_next</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">wire</span>    <span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>   <span class="n">crc_d8</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">assign</span>  <span class="n">crc_d8</span> <span class="o">=</span> <span class="n">gmii_txd</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">arp_rx</span> 
+</span></span><span class="line"><span class="cl"><span class="p">#(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">FPGA_MAC</span><span class="p">(</span><span class="n">FPGA_MAC</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">FPGA_IP</span><span class="p">(</span><span class="n">FPGA_IP</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">ETH_TYPE</span><span class="p">(</span><span class="n">ETH_TYPE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">arp_rx_inst</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">clk</span><span class="p">(</span><span class="n">gmii_rx_clk</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">rst_n</span><span class="p">(</span><span class="n">rst_n</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">gmii_rx_dv</span><span class="p">(</span><span class="n">gmii_rx_dv</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">gmii_rxd</span><span class="p">(</span><span class="n">gmii_rxd</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">arp_rx_done</span><span class="p">(</span><span class="n">arp_rx_done</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">arp_rx_type</span><span class="p">(</span><span class="n">arp_rx_type</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">src_mac</span><span class="p">(</span><span class="n">src_mac</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">src_ip</span><span class="p">(</span><span class="n">src_ip</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">// 内部信号与状态机定义
-</span></span></span><span class="line"><span class="cl"><span class="c1">// TODO: 在此处补充状态机、字段解析与发送逻辑
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">arp_tx</span>
+</span></span><span class="line"><span class="cl"><span class="p">#(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">FPGA_MAC</span><span class="p">(</span><span class="n">FPGA_MAC</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">FPGA_IP</span><span class="p">(</span><span class="n">FPGA_IP</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">TARGET_MAC</span><span class="p">(</span><span class="n">TARGET_MAC</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">TARGET_IP</span><span class="p">(</span><span class="n">TARGET_IP</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">arp_tx_inst</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">clk</span><span class="p">(</span><span class="n">gmii_tx_clk</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">rst_n</span><span class="p">(</span><span class="n">rst_n</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">arp_tx_en</span><span class="p">(</span><span class="n">arp_tx_en</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">arp_tx_type</span><span class="p">(</span><span class="n">arp_tx_type</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">target_mac</span><span class="p">(</span><span class="n">target_mac</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">target_ip</span><span class="p">(</span><span class="n">target_ip</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">crc_data</span><span class="p">(</span><span class="n">crc_data</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">crc_next</span><span class="p">(</span><span class="n">crc_next</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">24</span><span class="p">]),</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">tx_done</span><span class="p">(</span><span class="n">tx_done</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">gmii_tx_en</span><span class="p">(</span><span class="n">gmii_tx_en</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">gmii_txd</span><span class="p">(</span><span class="n">gmii_txd</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">crc_en</span><span class="p">(</span><span class="n">crc_en</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">crc_clr</span><span class="p">(</span><span class="n">crc_clr</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">crc32_d8</span>   <span class="n">u_crc32_d8</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">clk</span>             <span class="p">(</span><span class="n">gmii_tx_clk</span><span class="p">),</span> 
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">rst_n</span>           <span class="p">(</span><span class="n">rst_n</span><span class="p">),</span> 
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">data</span>            <span class="p">(</span><span class="n">crc_d8</span><span class="p">),</span> 
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">crc_en</span>          <span class="p">(</span><span class="n">crc_en</span>     <span class="p">),</span> 
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">crc_clr</span>         <span class="p">(</span><span class="n">crc_clr</span>    <span class="p">),</span> 
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">crc_data</span>        <span class="p">(</span><span class="n">crc_data</span>   <span class="p">),</span> 
+</span></span><span class="line"><span class="cl">    <span class="p">.</span><span class="n">crc_next</span>        <span class="p">(</span><span class="n">crc_next</span>   <span class="p">)</span> 
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">endmodule</span>
 </span></span></code></pre></div><hr>
 
@@ -2017,64 +2101,67 @@
       <tr>
           <th>信号名</th>
           <th>方向</th>
-          <th>描述</th>
+          <th>位宽</th>
+          <th>时钟域</th>
+          <th>说明</th>
       </tr>
   </thead>
   <tbody>
       <tr>
-          <td>clk</td>
-          <td>输入</td>
-          <td>时钟</td>
+          <td><code>clk</code></td>
+          <td>In</td>
+          <td>1</td>
+          <td>GMII RX 时钟</td>
+          <td>与 <code>gmii_rx_clk</code> 相同</td>
       </tr>
       <tr>
-          <td>rst_n</td>
-          <td>输入</td>
-          <td>复位</td>
+          <td><code>rst_n</code></td>
+          <td>In</td>
+          <td>1</td>
+          <td>—</td>
+          <td>低电平复位</td>
       </tr>
       <tr>
-          <td>rx_din</td>
-          <td>输入</td>
-          <td>MAC 接收数据</td>
+          <td><code>gmii_rx_dv</code></td>
+          <td>In</td>
+          <td>1</td>
+          <td><code>clk</code></td>
+          <td>GMII 接收数据有效</td>
       </tr>
       <tr>
-          <td>rx_din_valid</td>
-          <td>输入</td>
-          <td>数据有效</td>
+          <td><code>gmii_rxd</code></td>
+          <td>In</td>
+          <td>8</td>
+          <td><code>clk</code></td>
+          <td>GMII 接收数据总线</td>
       </tr>
       <tr>
-          <td>rx_arp_valid</td>
-          <td>输出</td>
-          <td>指示解析到一完整 ARP 帧</td>
+          <td><code>arp_rx_done</code></td>
+          <td>Out</td>
+          <td>1</td>
+          <td><code>clk</code></td>
+          <td>一帧 ARP 接收完成脉冲（通过 FCS 状态结束产生）</td>
       </tr>
       <tr>
-          <td>rx_sender_mac</td>
-          <td>输出</td>
-          <td>报文中 Sender MAC</td>
+          <td><code>arp_rx_type</code></td>
+          <td>Out</td>
+          <td>1</td>
+          <td><code>clk</code></td>
+          <td>接收 ARP 类型：0=请求(OP=1)，1=应答(OP=2)</td>
       </tr>
       <tr>
-          <td>rx_sender_ip</td>
-          <td>输出</td>
-          <td>报文中 Sender IP</td>
+          <td><code>src_mac</code></td>
+          <td>Out</td>
+          <td>48</td>
+          <td><code>clk</code></td>
+          <td>ARP 报文中 Sender MAC（发送端 MAC）</td>
       </tr>
       <tr>
-          <td>rx_target_mac</td>
-          <td>输出</td>
-          <td>报文中 Target MAC</td>
-      </tr>
-      <tr>
-          <td>rx_target_ip</td>
-          <td>输出</td>
-          <td>报文中 Target IP</td>
-      </tr>
-      <tr>
-          <td>rx_is_request</td>
-          <td>输出</td>
-          <td>是否为 ARP Request</td>
-      </tr>
-      <tr>
-          <td>rx_is_reply</td>
-          <td>输出</td>
-          <td>是否为 ARP Reply</td>
+          <td><code>src_ip</code></td>
+          <td>Out</td>
+          <td>32</td>
+          <td><code>clk</code></td>
+          <td>ARP 报文中 Sender IP（发送端 IP）</td>
       </tr>
   </tbody>
 </table>
@@ -2088,13 +2175,374 @@
     </span>
     
 </h3>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="k">localparam</span> <span class="n">S_IDLE</span>    <span class="o">=</span> <span class="mh">3</span><span class="mi">&#39;d0</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="k">localparam</span> <span class="n">S_HDR</span>     <span class="o">=</span> <span class="mh">3</span><span class="mi">&#39;d1</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="k">localparam</span> <span class="n">S_PAYLOAD</span> <span class="o">=</span> <span class="mh">3</span><span class="mi">&#39;d2</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="k">localparam</span> <span class="n">S_DONE</span>    <span class="o">=</span> <span class="mh">3</span><span class="mi">&#39;d3</span><span class="p">;</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="k">module</span> <span class="n">arp_rx</span> 
+</span></span><span class="line"><span class="cl"><span class="p">#(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">parameter</span> <span class="n">FPGA_MAC</span> <span class="o">=</span> <span class="mh">48&#39;h0000</span><span class="n">_0000_0000</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">parameter</span> <span class="n">FPGA_IP</span> <span class="o">=</span> <span class="p">{</span><span class="mh">8</span><span class="mi">&#39;d192</span><span class="p">,</span><span class="mh">8</span><span class="mi">&#39;d168</span><span class="p">,</span><span class="mh">8</span><span class="mi">&#39;d1</span><span class="p">,</span><span class="mh">8</span><span class="mi">&#39;d10</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="k">parameter</span> <span class="n">ETH_TYPE</span> <span class="o">=</span> <span class="mh">16&#39;h0806</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1">// TODO: 在此处实现字段计数、字节对齐以及字段装配逻辑
-</span></span></span></code></pre></div><hr>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>                   <span class="n">clk</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>                   <span class="n">rst_n</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>                   <span class="n">gmii_rx_dv</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span> <span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>             <span class="n">gmii_rxd</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">output</span>                  <span class="n">arp_rx_done</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">output</span>                  <span class="n">arp_rx_type</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">output</span> <span class="p">[</span><span class="mh">47</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>           <span class="n">src_mac</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="k">output</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>           <span class="n">src_ip</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">//parameter define
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">localparam</span>  <span class="n">IDLE</span>      <span class="o">=</span> <span class="mh">6</span><span class="mb">&#39;b00</span><span class="n">_0001</span><span class="p">;</span> <span class="c1">//idle state
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">localparam</span>  <span class="n">PREAMBLE</span>  <span class="o">=</span> <span class="mh">6</span><span class="mb">&#39;b00</span><span class="n">_0010</span><span class="p">;</span> <span class="c1">//preamble 7 bytes 8&#39;h55
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">localparam</span>  <span class="n">SFD</span>       <span class="o">=</span> <span class="mh">6</span><span class="mb">&#39;b00</span><span class="n">_0100</span><span class="p">;</span> <span class="c1">//sfd 1 byte 8&#39;hd5
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">localparam</span>  <span class="n">ETH_HEAD</span>  <span class="o">=</span> <span class="mh">6</span><span class="mb">&#39;b00</span><span class="n">_1000</span><span class="p">;</span> <span class="c1">//eth head 14 bytes target mac(6) + source mac(6) + eth type(2)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">localparam</span>  <span class="n">ARP_DATA</span>  <span class="o">=</span> <span class="mh">6</span><span class="mb">&#39;b01</span><span class="n">_0000</span><span class="p">;</span> <span class="c1">//arp data 28 bytes hardware type(2) + protocol type(2) + 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                                    <span class="c1">//hardware size(1) + protocol size(1) + opcode(2) + 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                                    <span class="c1">//source mac(6) + source ip(4) + dest mac(6) + dest ip(4)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">localparam</span>  <span class="n">FCS</span>       <span class="o">=</span> <span class="mh">6</span><span class="mb">&#39;b10</span><span class="n">_0000</span><span class="p">;</span> <span class="c1">//fcs 4 bytes
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span> <span class="p">[</span><span class="mh">5</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>            <span class="n">cur_state</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span> <span class="p">[</span><span class="mh">5</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>            <span class="n">next_state</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span>                  <span class="n">state_done</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span>                  <span class="n">gmii_rx_dv_r</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span> <span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>            <span class="n">gmii_rxd_r</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span>                  <span class="n">arp_rx_done_int</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span>                  <span class="n">arp_rx_type_int</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span> <span class="p">[</span><span class="mh">47</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>           <span class="n">src_mac_int</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>           <span class="n">src_ip_int</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">//reg define
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">reg</span>                  <span class="n">err_en</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span> <span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>            <span class="n">rx_cnt</span><span class="p">;</span><span class="c1">//byte counter,arp have 28 bytes data,so max cnt is 27 is enough 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">reg</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>           <span class="n">rx_ip_target</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span> <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>           <span class="n">rx_ip_source</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span> <span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>           <span class="n">rx_op_type</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span> <span class="p">[</span><span class="mh">47</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>           <span class="n">rx_mac_target</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span> <span class="p">[</span><span class="mh">47</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>           <span class="n">rx_mac_source</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span> <span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>           <span class="n">rx_eth_type</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">always</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">clk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">gmii_rx_dv_r</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">gmii_rxd_r</span>   <span class="o">&lt;=</span> <span class="mh">8</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">gmii_rx_dv_r</span> <span class="o">&lt;=</span> <span class="n">gmii_rx_dv</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">gmii_rxd_r</span>   <span class="o">&lt;=</span> <span class="n">gmii_rxd</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">always</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">clk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">cur_state</span> <span class="o">&lt;=</span> <span class="n">IDLE</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">cur_state</span> <span class="o">&lt;=</span> <span class="n">next_state</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">always</span> <span class="p">@</span> <span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="n">next_state</span> <span class="o">=</span> <span class="n">IDLE</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span><span class="p">(</span><span class="n">cur_state</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nl">IDLE:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="n">gmii_rx_dv_r</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">next_state</span> <span class="o">=</span> <span class="n">PREAMBLE</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span>
+</span></span><span class="line"><span class="cl">            <span class="n">next_state</span> <span class="o">=</span> <span class="n">IDLE</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nl">PREAMBLE:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="n">state_done</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">next_state</span> <span class="o">=</span> <span class="n">SFD</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span>
+</span></span><span class="line"><span class="cl">            <span class="n">next_state</span> <span class="o">=</span> <span class="n">PREAMBLE</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nl">SFD:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">next_state</span> <span class="o">=</span> <span class="n">ETH_HEAD</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nl">ETH_HEAD:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="n">state_done</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">next_state</span> <span class="o">=</span> <span class="n">ARP_DATA</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span>
+</span></span><span class="line"><span class="cl">            <span class="n">next_state</span> <span class="o">=</span> <span class="n">ETH_HEAD</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nl">ARP_DATA:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="n">state_done</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">next_state</span> <span class="o">=</span> <span class="n">FCS</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span>
+</span></span><span class="line"><span class="cl">            <span class="n">next_state</span> <span class="o">=</span> <span class="n">ARP_DATA</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nl">FCS:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="n">state_done</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">next_state</span> <span class="o">=</span> <span class="n">IDLE</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span>
+</span></span><span class="line"><span class="cl">            <span class="n">next_state</span> <span class="o">=</span> <span class="n">FCS</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">default</span><span class="o">:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">next_state</span> <span class="o">=</span> <span class="n">IDLE</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    <span class="k">endcase</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">always</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">clk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">arp_rx_done_int</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">arp_rx_type_int</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">src_mac_int</span> <span class="o">&lt;=</span> <span class="mh">48</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">src_ip_int</span> <span class="o">&lt;=</span> <span class="mh">32</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">state_done</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">err_en</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">rx_cnt</span> <span class="o">&lt;=</span> <span class="mh">8</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">rx_ip_target</span> <span class="o">&lt;=</span> <span class="mh">32</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">rx_ip_source</span> <span class="o">&lt;=</span> <span class="mh">32</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">rx_op_type</span> <span class="o">&lt;=</span> <span class="mh">16</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">rx_mac_target</span> <span class="o">&lt;=</span> <span class="mh">48</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">rx_mac_source</span> <span class="o">&lt;=</span> <span class="mh">48</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">rx_eth_type</span> <span class="o">&lt;=</span> <span class="mh">16</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span><span class="p">(</span><span class="n">cur_state</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="nl">IDLE:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="n">gmii_rx_dv_r</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span><span class="p">(</span> <span class="n">gmii_rxd_r</span> <span class="o">!=</span> <span class="mh">8&#39;h55</span> <span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">err_en</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="k">end</span>
+</span></span><span class="line"><span class="cl">                <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">err_en</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="k">end</span>
+</span></span><span class="line"><span class="cl">                <span class="n">rx_cnt</span> <span class="o">&lt;=</span> <span class="n">rx_cnt</span> <span class="o">+</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">err_en</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">PREAMBLE</span> <span class="o">:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="n">gmii_rx_dv_r</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span><span class="p">(</span><span class="n">gmii_rxd_r</span> <span class="o">==</span> <span class="mh">8&#39;h55</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">err_en</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="k">end</span>
+</span></span><span class="line"><span class="cl">                <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">err_en</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">err_en</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="n">rx_cnt</span> <span class="o">==</span> <span class="mh">8</span><span class="mi">&#39;d6</span> <span class="o">&amp;&amp;</span> <span class="n">gmii_rx_dv_r</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">rx_cnt</span> <span class="o">&lt;=</span> <span class="mh">8</span><span class="mi">&#39;d0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">rx_cnt</span> <span class="o">&lt;=</span> <span class="n">rx_cnt</span> <span class="o">+</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="n">rx_cnt</span> <span class="o">==</span> <span class="mh">8</span><span class="mi">&#39;d5</span> <span class="o">&amp;&amp;</span> <span class="n">gmii_rx_dv_r</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">state_done</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">state_done</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">SFD</span> <span class="o">:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="n">gmii_rx_dv_r</span> <span class="o">&amp;&amp;</span> <span class="n">gmii_rxd_r</span> <span class="o">==</span> <span class="mh">8&#39;hd5</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">err_en</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">err_en</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="n">state_done</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">rx_cnt</span> <span class="o">&lt;=</span> <span class="mh">8</span><span class="mi">&#39;d0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">ETH_HEAD</span> <span class="o">:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="n">gmii_rx_dv_r</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// Capture target MAC address
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="k">if</span><span class="p">(</span><span class="n">rx_cnt</span> <span class="o">&lt;</span> <span class="mh">8</span><span class="mi">&#39;d6</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">rx_mac_target</span> <span class="o">&lt;=</span> <span class="p">{</span><span class="n">rx_mac_target</span><span class="p">[</span><span class="mh">39</span><span class="o">:</span><span class="mh">0</span><span class="p">],</span><span class="n">gmii_rxd_r</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">                <span class="k">end</span>
+</span></span><span class="line"><span class="cl">                <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">rx_mac_target</span> <span class="o">&lt;=</span> <span class="n">rx_mac_target</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">// Capture source MAC address
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="k">if</span><span class="p">(</span><span class="n">rx_cnt</span> <span class="o">&gt;=</span> <span class="mh">8</span><span class="mi">&#39;d6</span> <span class="o">&amp;&amp;</span> <span class="n">rx_cnt</span> <span class="o">&lt;</span> <span class="mh">8</span><span class="mi">&#39;d12</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">rx_mac_source</span> <span class="o">&lt;=</span> <span class="p">{</span><span class="n">rx_mac_source</span><span class="p">[</span><span class="mh">39</span><span class="o">:</span><span class="mh">0</span><span class="p">],</span><span class="n">gmii_rxd_r</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">                <span class="k">end</span>
+</span></span><span class="line"><span class="cl">                <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">rx_mac_source</span> <span class="o">&lt;=</span> <span class="n">rx_mac_source</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="k">end</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// Capture Ethernet type
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="k">if</span><span class="p">(</span><span class="n">rx_cnt</span> <span class="o">&gt;=</span> <span class="mh">8</span><span class="mi">&#39;d12</span> <span class="o">&amp;&amp;</span> <span class="n">rx_cnt</span> <span class="o">&lt;</span> <span class="mh">8</span><span class="mi">&#39;d14</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">rx_eth_type</span> <span class="o">&lt;=</span> <span class="p">{</span><span class="n">rx_eth_type</span><span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">],</span><span class="n">gmii_rxd_r</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">                <span class="k">end</span>
+</span></span><span class="line"><span class="cl">                <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">rx_eth_type</span> <span class="o">&lt;=</span> <span class="n">rx_eth_type</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="k">end</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// Check
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="k">if</span><span class="p">((</span><span class="n">rx_cnt</span> <span class="o">==</span> <span class="mh">8</span><span class="mi">&#39;d6</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">rx_mac_target</span> <span class="o">!=</span> <span class="n">FPGA_MAC</span><span class="p">)</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">(</span><span class="n">rx_mac_target</span> <span class="o">!=</span> <span class="mh">48&#39;hff</span><span class="n">_ff_ff_ff_ff_ff</span><span class="p">))</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">err_en</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="k">end</span>
+</span></span><span class="line"><span class="cl">                <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">err_en</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="n">rx_cnt</span> <span class="o">==</span> <span class="mh">8</span><span class="mi">&#39;d13</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">src_mac_int</span> <span class="o">&lt;=</span> <span class="n">rx_mac_source</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">rx_cnt</span> <span class="o">&lt;=</span> <span class="mh">8</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">rx_cnt</span> <span class="o">&lt;=</span> <span class="n">rx_cnt</span> <span class="o">+</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1">// Finish ETH_HEAD state
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="k">if</span><span class="p">(</span><span class="n">rx_cnt</span> <span class="o">==</span> <span class="mh">8</span><span class="mi">&#39;d12</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">state_done</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>                    
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">state_done</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">ARP_DATA</span> <span class="o">:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="n">gmii_rx_dv_r</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// Capture target ip address
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="k">if</span><span class="p">(</span><span class="n">rx_cnt</span> <span class="o">&gt;=</span> <span class="mh">8</span><span class="mi">&#39;d24</span> <span class="o">&amp;&amp;</span> <span class="n">rx_cnt</span> <span class="o">&lt;</span> <span class="mh">8</span><span class="mi">&#39;d28</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">rx_ip_target</span> <span class="o">&lt;=</span> <span class="p">{</span><span class="n">rx_ip_target</span><span class="p">[</span><span class="mh">23</span><span class="o">:</span><span class="mh">0</span><span class="p">],</span><span class="n">gmii_rxd_r</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">                <span class="k">end</span>
+</span></span><span class="line"><span class="cl">                <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">rx_ip_target</span> <span class="o">&lt;=</span> <span class="n">rx_ip_target</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1">// Capture source ip address
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="k">if</span><span class="p">(</span><span class="n">rx_cnt</span> <span class="o">&gt;=</span> <span class="mh">8</span><span class="mi">&#39;d14</span> <span class="o">&amp;&amp;</span> <span class="n">rx_cnt</span> <span class="o">&lt;</span> <span class="mh">8</span><span class="mi">&#39;d18</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">rx_ip_source</span> <span class="o">&lt;=</span> <span class="p">{</span><span class="n">rx_ip_source</span><span class="p">[</span><span class="mh">23</span><span class="o">:</span><span class="mh">0</span><span class="p">],</span><span class="n">gmii_rxd_r</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">                <span class="k">end</span>
+</span></span><span class="line"><span class="cl">                <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">rx_ip_source</span> <span class="o">&lt;=</span> <span class="n">rx_ip_source</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="k">end</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// Capture op type
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="k">if</span><span class="p">(</span><span class="n">rx_cnt</span> <span class="o">&gt;=</span> <span class="mh">8</span><span class="mi">&#39;d6</span> <span class="o">&amp;&amp;</span> <span class="n">rx_cnt</span> <span class="o">&lt;</span> <span class="mh">8</span><span class="mi">&#39;d8</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">rx_op_type</span> <span class="o">&lt;=</span> <span class="p">{</span><span class="n">rx_op_type</span><span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">],</span><span class="n">gmii_rxd_r</span><span class="p">};</span>
+</span></span><span class="line"><span class="cl">                <span class="k">end</span>
+</span></span><span class="line"><span class="cl">                <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">rx_op_type</span> <span class="o">&lt;=</span> <span class="n">rx_op_type</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="k">end</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// Check 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="k">if</span><span class="p">((</span><span class="n">rx_cnt</span> <span class="o">==</span> <span class="mh">8</span><span class="mi">&#39;d28</span> <span class="o">&amp;&amp;</span> <span class="n">rx_ip_target</span> <span class="o">!=</span> <span class="n">FPGA_IP</span><span class="p">)</span> <span class="o">||</span> 
+</span></span><span class="line"><span class="cl">                <span class="p">((</span><span class="n">rx_cnt</span> <span class="o">==</span> <span class="mh">8</span><span class="mi">&#39;d8</span> <span class="o">&amp;&amp;</span> <span class="n">rx_op_type</span> <span class="o">!=</span> <span class="mh">16</span><span class="mi">&#39;d1</span><span class="p">)</span> <span class="o">&amp;&amp;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">(</span><span class="n">rx_cnt</span> <span class="o">==</span> <span class="mh">8</span><span class="mi">&#39;d8</span> <span class="o">&amp;&amp;</span> <span class="n">rx_op_type</span> <span class="o">!=</span> <span class="mh">16</span><span class="mi">&#39;d2</span><span class="p">))</span> <span class="o">||</span>
+</span></span><span class="line"><span class="cl">                <span class="p">(</span><span class="n">rx_cnt</span> <span class="o">==</span> <span class="mh">8</span><span class="mi">&#39;d0</span> <span class="o">&amp;&amp;</span> <span class="n">rx_eth_type</span> <span class="o">!=</span> <span class="n">ETH_TYPE</span><span class="p">))</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">err_en</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="k">end</span>
+</span></span><span class="line"><span class="cl">                <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">err_en</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1">// Finish ETH_HEAD state
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="k">if</span><span class="p">(</span><span class="n">rx_cnt</span> <span class="o">==</span> <span class="mh">8</span><span class="mi">&#39;d45</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">rx_cnt</span> <span class="o">&lt;=</span> <span class="mh">8</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">arp_rx_type_int</span> <span class="o">&lt;=</span> <span class="n">rx_op_type</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">src_ip_int</span> <span class="o">&lt;=</span> <span class="n">rx_ip_source</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">rx_cnt</span> <span class="o">&lt;=</span> <span class="n">rx_cnt</span> <span class="o">+</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="n">rx_cnt</span> <span class="o">==</span> <span class="mh">8</span><span class="mi">&#39;d44</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">state_done</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>                    
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">state_done</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">        <span class="n">FCS</span> <span class="o">:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="n">gmii_rx_dv_r</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="c1">// Finish FCS state
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="k">if</span><span class="p">(</span><span class="n">rx_cnt</span> <span class="o">==</span> <span class="mh">8</span><span class="mi">&#39;d3</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">arp_rx_done_int</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="k">end</span>
+</span></span><span class="line"><span class="cl">                <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">arp_rx_done_int</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">arp_rx_done_int</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="n">rx_cnt</span> <span class="o">==</span> <span class="mh">8</span><span class="mi">&#39;d3</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">rx_cnt</span> <span class="o">&lt;=</span> <span class="mh">8</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">rx_cnt</span> <span class="o">&lt;=</span> <span class="n">rx_cnt</span> <span class="o">+</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="n">rx_cnt</span> <span class="o">==</span> <span class="mh">8</span><span class="mi">&#39;d2</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">state_done</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>                    
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">state_done</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    <span class="k">default</span> <span class="o">:</span> <span class="k">begin</span>   
+</span></span><span class="line"><span class="cl">            <span class="n">state_done</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    <span class="k">endcase</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>   
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">assign</span> <span class="n">arp_rx_done</span> <span class="o">=</span> <span class="n">arp_rx_done_int</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">assign</span> <span class="n">arp_rx_type</span> <span class="o">=</span> <span class="n">arp_rx_type_int</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">assign</span> <span class="n">src_mac</span> <span class="o">=</span> <span class="n">src_mac_int</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">assign</span> <span class="n">src_ip</span> <span class="o">=</span> <span class="n">src_ip_int</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">endmodule</span>
+</span></span></code></pre></div><hr>
 
 <h2 class="relative group">6. ARP 发送构造模块 arp_tx.v
     <div id="6-arp-发送构造模块-arp_txv" class="anchor"></div>
@@ -2131,64 +2579,102 @@
       <tr>
           <th>信号名</th>
           <th>方向</th>
-          <th>描述</th>
+          <th>位宽</th>
+          <th>时钟域</th>
+          <th>说明</th>
       </tr>
   </thead>
   <tbody>
       <tr>
-          <td>clk</td>
-          <td>输入</td>
-          <td>时钟</td>
+          <td><code>clk</code></td>
+          <td>In</td>
+          <td>1</td>
+          <td>GMII TX 时钟</td>
+          <td>与 <code>gmii_tx_clk</code> 相同</td>
       </tr>
       <tr>
-          <td>rst_n</td>
-          <td>输入</td>
-          <td>复位</td>
+          <td><code>rst_n</code></td>
+          <td>In</td>
+          <td>1</td>
+          <td>—</td>
+          <td>低电平复位</td>
       </tr>
       <tr>
-          <td>local_mac[47:0]</td>
-          <td>输入</td>
-          <td>本机 MAC</td>
+          <td><code>arp_tx_en</code></td>
+          <td>In</td>
+          <td>1</td>
+          <td><code>clk</code></td>
+          <td>ARP 发送使能，上升沿有效，触发一次完整 ARP 帧发送</td>
       </tr>
       <tr>
-          <td>local_ip[31:0]</td>
-          <td>输入</td>
-          <td>本机 IP</td>
+          <td><code>arp_tx_type</code></td>
+          <td>In</td>
+          <td>1</td>
+          <td><code>clk</code></td>
+          <td>发送类型：0=ARP Request，1=ARP Reply</td>
       </tr>
       <tr>
-          <td>tx_start_request</td>
-          <td>输入</td>
-          <td>触发发送 ARP Request</td>
+          <td><code>target_mac</code></td>
+          <td>In</td>
+          <td>48</td>
+          <td><code>clk</code></td>
+          <td>目标 MAC 地址：Reply 时为应答对象；Request 可填 0 或广播</td>
       </tr>
       <tr>
-          <td>tx_start_reply</td>
-          <td>输入</td>
-          <td>触发发送 ARP Reply</td>
+          <td><code>target_ip</code></td>
+          <td>In</td>
+          <td>32</td>
+          <td><code>clk</code></td>
+          <td>目标 IP 地址，ARP Request 的查询对象 IP</td>
       </tr>
       <tr>
-          <td>target_ip[31:0]</td>
-          <td>输入</td>
-          <td>请求或应答中的目标 IP</td>
+          <td><code>crc_data</code></td>
+          <td>In</td>
+          <td>32</td>
+          <td><code>clk</code></td>
+          <td>CRC32 当前寄存器值（来自 <code>crc32_d8</code> 模块）</td>
       </tr>
       <tr>
-          <td>target_mac[47:0]</td>
-          <td>输入</td>
-          <td>应答中的目标 MAC（通常为对端）</td>
+          <td><code>crc_next</code></td>
+          <td>In</td>
+          <td>8</td>
+          <td><code>clk</code></td>
+          <td>CRC32 下一拍高 8bit，用于最后一个 FCS 字节</td>
       </tr>
       <tr>
-          <td>tx_dout[&hellip;]</td>
-          <td>输出</td>
-          <td>发送数据</td>
+          <td><code>tx_done</code></td>
+          <td>Out</td>
+          <td>1</td>
+          <td><code>clk</code></td>
+          <td>一帧 ARP 发送完成脉冲</td>
       </tr>
       <tr>
-          <td>tx_dout_valid</td>
-          <td>输出</td>
-          <td>数据有效</td>
+          <td><code>gmii_tx_en</code></td>
+          <td>Out</td>
+          <td>1</td>
+          <td><code>clk</code></td>
+          <td>GMII 发送数据有效</td>
       </tr>
       <tr>
-          <td>tx_done</td>
-          <td>输出</td>
-          <td>报文发送完成</td>
+          <td><code>gmii_txd</code></td>
+          <td>Out</td>
+          <td>8</td>
+          <td><code>clk</code></td>
+          <td>GMII 发送数据总线：前导码+SFD+MAC 头+ARP+Padding+FCS</td>
+      </tr>
+      <tr>
+          <td><code>crc_en</code></td>
+          <td>Out</td>
+          <td>1</td>
+          <td><code>clk</code></td>
+          <td>CRC 使能，高电平表示当前 <code>gmii_txd</code> 参与 CRC 计算</td>
+      </tr>
+      <tr>
+          <td><code>crc_clr</code></td>
+          <td>Out</td>
+          <td>1</td>
+          <td><code>clk</code></td>
+          <td>CRC 清零脉冲，通常在一帧发送结束后一拍拉高</td>
       </tr>
   </tbody>
 </table>
@@ -2202,100 +2688,413 @@
     </span>
     
 </h3>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl"><span class="c1">// 伪代码思路：
-</span></span></span><span class="line"><span class="cl"><span class="c1">// 1. 输出以太网头：Dst MAC、Src MAC、EtherType
-</span></span></span><span class="line"><span class="cl"><span class="c1">// 2. 输出 ARP 固定头字段：HTYPE/PTYPE/HLEN/PLEN/OPER
-</span></span></span><span class="line"><span class="cl"><span class="c1">// 3. 输出 Sender MAC/IP、Target MAC/IP
-</span></span></span><span class="line"><span class="cl"><span class="c1">// 4. 置位 tx_done
-</span></span></span></code></pre></div><hr>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-verilog" data-lang="verilog"><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">module</span> <span class="n">arp_tx</span>
+</span></span><span class="line"><span class="cl"><span class="p">#</span>
+</span></span><span class="line"><span class="cl"><span class="p">(</span>
+</span></span><span class="line"><span class="cl"><span class="c1">//parameter define
+</span></span></span><span class="line"><span class="cl"><span class="c1">// FPGA MAC address 00-11-22-33-44-55
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">parameter</span> <span class="n">FPGA_MAC</span> <span class="o">=</span> <span class="p">{</span><span class="mh">48&#39;h00</span><span class="n">_11_22_33_44_55</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// FPGA IP address 192.168.1.10
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">parameter</span> <span class="n">FPGA_IP</span>  <span class="o">=</span> <span class="p">{</span><span class="mh">8</span><span class="mi">&#39;d192</span><span class="p">,</span><span class="mh">8</span><span class="mi">&#39;d168</span><span class="p">,</span><span class="mh">8</span><span class="mi">&#39;d1</span><span class="p">,</span><span class="mh">8</span><span class="mi">&#39;d10</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// target MAC address ff_ff_ff_ff_ff_ff
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">parameter</span>  <span class="n">TARGET_MAC</span>   <span class="o">=</span> <span class="p">{</span><span class="mh">48&#39;hff</span><span class="n">_ff_ff_ff_ff_ff</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="c1">// target IP address 192.168.1.102     
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">parameter</span>  <span class="n">TARGET_IP</span>    <span class="o">=</span> <span class="p">{</span><span class="mh">8</span><span class="mi">&#39;d192</span><span class="p">,</span><span class="mh">8</span><span class="mi">&#39;d168</span><span class="p">,</span><span class="mh">8</span><span class="mi">&#39;d1</span><span class="p">,</span><span class="mh">8</span><span class="mi">&#39;d102</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">(</span> 
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>                   <span class="n">clk</span>        <span class="p">,</span> <span class="c1">//clock signal
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">input</span>                   <span class="n">rst_n</span>      <span class="p">,</span> <span class="c1">//reset signal, active low
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>                   <span class="n">arp_tx_en</span>  <span class="p">,</span> <span class="c1">//ARP send enable
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">input</span>                   <span class="n">arp_tx_type</span><span class="p">,</span> <span class="c1">//ARP type  0:request  1:reply
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">input</span>        <span class="p">[</span><span class="mh">47</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>     <span class="n">target_mac</span>    <span class="p">,</span> 
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>        <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>     <span class="n">target_ip</span>     <span class="p">,</span> 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>        <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>     <span class="n">crc_data</span>   <span class="p">,</span> 
+</span></span><span class="line"><span class="cl">    <span class="k">input</span>         <span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>     <span class="n">crc_next</span>   <span class="p">,</span> 
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">output</span>                  <span class="n">tx_done</span>    <span class="p">,</span> 
+</span></span><span class="line"><span class="cl">    <span class="k">output</span>                  <span class="n">gmii_tx_en</span> <span class="p">,</span> 
+</span></span><span class="line"><span class="cl">    <span class="k">output</span>   <span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>          <span class="n">gmii_txd</span>   <span class="p">,</span> 
+</span></span><span class="line"><span class="cl">    <span class="k">output</span>                  <span class="n">crc_en</span>     <span class="p">,</span> 
+</span></span><span class="line"><span class="cl">    <span class="k">output</span>                  <span class="n">crc_clr</span>      
+</span></span><span class="line"><span class="cl">    <span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">//interface reg define
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">reg</span>                 <span class="n">arp_tx_en_r</span><span class="p">;</span> <span class="c1">//ARP send enable
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">reg</span>                 <span class="n">arp_tx_en_rr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span>                 <span class="n">arp_tx_type_r</span><span class="p">;</span> <span class="c1">//ARP type  0:request  1:reply
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">reg</span>   <span class="p">[</span><span class="mh">47</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>        <span class="n">target_mac_r</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span>   <span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>        <span class="n">target_ip_r</span> <span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">always</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">clk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">arp_tx_en_r</span>   <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">arp_tx_en_rr</span>  <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">arp_tx_type_r</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">target_mac_r</span>  <span class="o">&lt;=</span> <span class="mh">48</span><span class="mi">&#39;d0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">target_ip_r</span>   <span class="o">&lt;=</span> <span class="mh">32</span><span class="mi">&#39;d0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">arp_tx_en_r</span>   <span class="o">&lt;=</span> <span class="n">arp_tx_en</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">arp_tx_en_rr</span>  <span class="o">&lt;=</span> <span class="n">arp_tx_en_r</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">arp_tx_type_r</span> <span class="o">&lt;=</span> <span class="n">arp_tx_type</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">target_mac_r</span>  <span class="o">&lt;=</span> <span class="n">target_mac</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">target_ip_r</span>   <span class="o">&lt;=</span> <span class="n">target_ip</span> <span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span>                  <span class="n">tx_done_int</span>    <span class="p">;</span> 
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span>                  <span class="n">gmii_tx_en_int</span> <span class="p">;</span> 
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span>   <span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>          <span class="n">gmii_txd_int</span>   <span class="p">;</span> 
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span>                  <span class="n">crc_en_int</span>     <span class="p">;</span> 
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span>                  <span class="n">crc_clr_int</span>    <span class="p">;</span>      
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">localparam</span>  <span class="n">IDLE</span>      <span class="o">=</span> <span class="mh">6</span><span class="mb">&#39;b00</span><span class="n">_0001</span><span class="p">;</span> <span class="c1">//idle state
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">localparam</span>  <span class="n">PREAMBLE</span>  <span class="o">=</span> <span class="mh">6</span><span class="mb">&#39;b00</span><span class="n">_0010</span><span class="p">;</span> <span class="c1">//preamble 7 bytes 8&#39;h55
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">localparam</span>  <span class="n">SFD</span>       <span class="o">=</span> <span class="mh">6</span><span class="mb">&#39;b00</span><span class="n">_0100</span><span class="p">;</span> <span class="c1">//sfd 1 byte 8&#39;hd5
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">localparam</span>  <span class="n">ETH_HEAD</span>  <span class="o">=</span> <span class="mh">6</span><span class="mb">&#39;b00</span><span class="n">_1000</span><span class="p">;</span> <span class="c1">//eth head 14 bytes target mac(6) + source mac(6) + eth type(2)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">localparam</span>  <span class="n">ARP_DATA</span>  <span class="o">=</span> <span class="mh">6</span><span class="mb">&#39;b01</span><span class="n">_0000</span><span class="p">;</span> <span class="c1">//arp data 28 bytes hardware type(2) + protocol type(2) + 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                                    <span class="c1">//hardware size(1) + protocol size(1) + opcode(2) + 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                                    <span class="c1">//source mac(6) + source ip(4) + dest mac(6) + dest ip(4)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">localparam</span>  <span class="n">FCS</span>       <span class="o">=</span> <span class="mh">6</span><span class="mb">&#39;b10</span><span class="n">_0000</span><span class="p">;</span> <span class="c1">//fcs 4 bytes
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">localparam</span>  <span class="n">ETH_TYPE</span>     <span class="o">=</span> <span class="mh">16&#39;h0806</span> <span class="p">;</span> <span class="c1">//ethernet type ARP
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">localparam</span>  <span class="n">HD_TYPE</span>      <span class="o">=</span> <span class="mh">16&#39;h0001</span> <span class="p">;</span> <span class="c1">//hardware type ethernet
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">localparam</span>  <span class="n">PROTOCOL_TYPE</span><span class="o">=</span> <span class="mh">16&#39;h0800</span> <span class="p">;</span> <span class="c1">//protocol type IP
+</span></span></span><span class="line"><span class="cl"><span class="c1">//minimum ethernet data is 46 bytes, fill with padding if not enough
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">localparam</span>  <span class="n">MIN_DATA_NUM</span> <span class="o">=</span> <span class="mh">16</span><span class="mi">&#39;d46</span>   <span class="p">;</span>    
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span> <span class="p">[</span><span class="mh">5</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>            <span class="n">cur_state</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span> <span class="p">[</span><span class="mh">5</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>            <span class="n">next_state</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span>                  <span class="n">state_done</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="kt">reg</span>   <span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>          <span class="n">tx_cnt</span><span class="p">;</span><span class="c1">//byte counter,arp have 28 bytes data,so max cnt is 27 is enough 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">reg</span>   <span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>          <span class="n">preamble</span> <span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span><span class="c1">//preamble data + sfd
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">reg</span>   <span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>          <span class="n">eth_head</span> <span class="p">[</span><span class="mh">13</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span><span class="c1">//eth head data
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">reg</span>   <span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">]</span>          <span class="n">arp_data</span> <span class="p">[</span><span class="mh">27</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span><span class="c1">//arp data
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="k">always</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">clk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">cur_state</span> <span class="o">&lt;=</span> <span class="n">IDLE</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">cur_state</span> <span class="o">&lt;=</span> <span class="n">next_state</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">always</span> <span class="p">@</span> <span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="n">next_state</span> <span class="o">=</span> <span class="n">IDLE</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span><span class="p">(</span><span class="n">cur_state</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nl">IDLE:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="n">state_done</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">next_state</span> <span class="o">=</span> <span class="n">PREAMBLE</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span>
+</span></span><span class="line"><span class="cl">            <span class="n">next_state</span> <span class="o">=</span> <span class="n">IDLE</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nl">PREAMBLE:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="n">state_done</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">next_state</span> <span class="o">=</span> <span class="n">SFD</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span>
+</span></span><span class="line"><span class="cl">            <span class="n">next_state</span> <span class="o">=</span> <span class="n">PREAMBLE</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nl">SFD:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">next_state</span> <span class="o">=</span> <span class="n">ETH_HEAD</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nl">ETH_HEAD:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="n">state_done</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">next_state</span> <span class="o">=</span> <span class="n">ARP_DATA</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span>
+</span></span><span class="line"><span class="cl">            <span class="n">next_state</span> <span class="o">=</span> <span class="n">ETH_HEAD</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nl">ARP_DATA:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="n">state_done</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">next_state</span> <span class="o">=</span> <span class="n">FCS</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span>
+</span></span><span class="line"><span class="cl">            <span class="n">next_state</span> <span class="o">=</span> <span class="n">ARP_DATA</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nl">FCS:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="n">state_done</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">next_state</span> <span class="o">=</span> <span class="n">IDLE</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span>
+</span></span><span class="line"><span class="cl">            <span class="n">next_state</span> <span class="o">=</span> <span class="n">FCS</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">default</span><span class="o">:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">next_state</span> <span class="o">=</span> <span class="n">IDLE</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    <span class="k">endcase</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">always</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">clk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">state_done</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">tx_cnt</span> <span class="o">&lt;=</span> <span class="mh">8</span><span class="mi">&#39;d0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">tx_done_int</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">gmii_tx_en_int</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">gmii_txd_int</span> <span class="o">&lt;=</span> <span class="mh">8</span><span class="mi">&#39;d0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">crc_en_int</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">preamble</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mh">8&#39;h55</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">preamble</span><span class="p">[</span><span class="mh">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mh">8&#39;h55</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">preamble</span><span class="p">[</span><span class="mh">2</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mh">8&#39;h55</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">preamble</span><span class="p">[</span><span class="mh">3</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mh">8&#39;h55</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">preamble</span><span class="p">[</span><span class="mh">4</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mh">8&#39;h55</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">preamble</span><span class="p">[</span><span class="mh">5</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mh">8&#39;h55</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">preamble</span><span class="p">[</span><span class="mh">6</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mh">8&#39;h55</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">preamble</span><span class="p">[</span><span class="mh">7</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mh">8&#39;hd5</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">eth_head</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">TARGET_MAC</span><span class="p">[</span><span class="mh">47</span><span class="o">:</span><span class="mh">40</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">eth_head</span><span class="p">[</span><span class="mh">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">TARGET_MAC</span><span class="p">[</span><span class="mh">39</span><span class="o">:</span><span class="mh">32</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">eth_head</span><span class="p">[</span><span class="mh">2</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">TARGET_MAC</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">24</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">eth_head</span><span class="p">[</span><span class="mh">3</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">TARGET_MAC</span><span class="p">[</span><span class="mh">23</span><span class="o">:</span><span class="mh">16</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">eth_head</span><span class="p">[</span><span class="mh">4</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">TARGET_MAC</span><span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">8</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">eth_head</span><span class="p">[</span><span class="mh">5</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">TARGET_MAC</span><span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">eth_head</span><span class="p">[</span><span class="mh">6</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">FPGA_MAC</span><span class="p">[</span><span class="mh">47</span><span class="o">:</span><span class="mh">40</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">eth_head</span><span class="p">[</span><span class="mh">7</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">FPGA_MAC</span><span class="p">[</span><span class="mh">39</span><span class="o">:</span><span class="mh">32</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">eth_head</span><span class="p">[</span><span class="mh">8</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">FPGA_MAC</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">24</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">eth_head</span><span class="p">[</span><span class="mh">9</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">FPGA_MAC</span><span class="p">[</span><span class="mh">23</span><span class="o">:</span><span class="mh">16</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">eth_head</span><span class="p">[</span><span class="mh">10</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">FPGA_MAC</span><span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">8</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">eth_head</span><span class="p">[</span><span class="mh">11</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">FPGA_MAC</span><span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">eth_head</span><span class="p">[</span><span class="mh">12</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">ETH_TYPE</span><span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">8</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">eth_head</span><span class="p">[</span><span class="mh">13</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">ETH_TYPE</span><span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arp_data</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">HD_TYPE</span><span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">8</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arp_data</span><span class="p">[</span><span class="mh">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">HD_TYPE</span><span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arp_data</span><span class="p">[</span><span class="mh">2</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">PROTOCOL_TYPE</span><span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">8</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arp_data</span><span class="p">[</span><span class="mh">3</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">PROTOCOL_TYPE</span><span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arp_data</span><span class="p">[</span><span class="mh">4</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mh">8</span><span class="mi">&#39;d6</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arp_data</span><span class="p">[</span><span class="mh">5</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mh">8</span><span class="mi">&#39;d4</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arp_data</span><span class="p">[</span><span class="mh">6</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mh">8</span><span class="mi">&#39;d0</span><span class="p">;</span>    <span class="c1">// 01 for request, 02 for reply
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>            <span class="n">arp_data</span><span class="p">[</span><span class="mh">7</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mh">8</span><span class="mi">&#39;d1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arp_data</span><span class="p">[</span><span class="mh">8</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">FPGA_MAC</span><span class="p">[</span><span class="mh">47</span><span class="o">:</span><span class="mh">40</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arp_data</span><span class="p">[</span><span class="mh">9</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">FPGA_MAC</span><span class="p">[</span><span class="mh">39</span><span class="o">:</span><span class="mh">32</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arp_data</span><span class="p">[</span><span class="mh">10</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">FPGA_MAC</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">24</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arp_data</span><span class="p">[</span><span class="mh">11</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">FPGA_MAC</span><span class="p">[</span><span class="mh">23</span><span class="o">:</span><span class="mh">16</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arp_data</span><span class="p">[</span><span class="mh">12</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">FPGA_MAC</span><span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">8</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arp_data</span><span class="p">[</span><span class="mh">13</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">FPGA_MAC</span><span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arp_data</span><span class="p">[</span><span class="mh">14</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">FPGA_IP</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">24</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arp_data</span><span class="p">[</span><span class="mh">15</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">FPGA_IP</span><span class="p">[</span><span class="mh">23</span><span class="o">:</span><span class="mh">16</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arp_data</span><span class="p">[</span><span class="mh">16</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">FPGA_IP</span><span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">8</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arp_data</span><span class="p">[</span><span class="mh">17</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">FPGA_IP</span><span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arp_data</span><span class="p">[</span><span class="mh">18</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">TARGET_MAC</span><span class="p">[</span><span class="mh">47</span><span class="o">:</span><span class="mh">40</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arp_data</span><span class="p">[</span><span class="mh">19</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">TARGET_MAC</span><span class="p">[</span><span class="mh">39</span><span class="o">:</span><span class="mh">32</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arp_data</span><span class="p">[</span><span class="mh">20</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">TARGET_MAC</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">24</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arp_data</span><span class="p">[</span><span class="mh">21</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">TARGET_MAC</span><span class="p">[</span><span class="mh">23</span><span class="o">:</span><span class="mh">16</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arp_data</span><span class="p">[</span><span class="mh">22</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">TARGET_MAC</span><span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">8</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arp_data</span><span class="p">[</span><span class="mh">23</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">TARGET_MAC</span><span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arp_data</span><span class="p">[</span><span class="mh">24</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">TARGET_IP</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">24</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arp_data</span><span class="p">[</span><span class="mh">25</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">TARGET_IP</span><span class="p">[</span><span class="mh">23</span><span class="o">:</span><span class="mh">16</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arp_data</span><span class="p">[</span><span class="mh">26</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">TARGET_IP</span><span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">8</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">arp_data</span><span class="p">[</span><span class="mh">27</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">TARGET_IP</span><span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span><span class="p">(</span><span class="n">cur_state</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="nl">IDLE:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">tx_done_int</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">gmii_tx_en_int</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">gmii_txd_int</span> <span class="o">&lt;=</span> <span class="mh">8</span><span class="mi">&#39;d0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">crc_en_int</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">arp_tx_en_rr</span> <span class="o">&amp;&amp;</span> <span class="n">arp_tx_en_r</span><span class="p">)</span> <span class="c1">//detect rising edge of arp_tx_en
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                <span class="n">state_done</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span>
+</span></span><span class="line"><span class="cl">                <span class="n">state_done</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">tx_cnt</span> <span class="o">&lt;=</span> <span class="mh">8</span><span class="mi">&#39;d0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">((</span><span class="n">target_mac_r</span> <span class="o">!=</span> <span class="mh">48</span><span class="mi">&#39;d0</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="n">target_ip_r</span> <span class="o">!=</span> <span class="mh">32</span><span class="mi">&#39;d0</span><span class="p">))</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">eth_head</span><span class="p">[</span><span class="mh">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">target_mac_r</span><span class="p">[</span><span class="mh">47</span><span class="o">:</span><span class="mh">40</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">                <span class="n">eth_head</span><span class="p">[</span><span class="mh">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">target_mac_r</span><span class="p">[</span><span class="mh">39</span><span class="o">:</span><span class="mh">32</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">                <span class="n">eth_head</span><span class="p">[</span><span class="mh">2</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">target_mac_r</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">24</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">                <span class="n">eth_head</span><span class="p">[</span><span class="mh">3</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">target_mac_r</span><span class="p">[</span><span class="mh">23</span><span class="o">:</span><span class="mh">16</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">                <span class="n">eth_head</span><span class="p">[</span><span class="mh">4</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">target_mac_r</span><span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">8</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">                <span class="n">eth_head</span><span class="p">[</span><span class="mh">5</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">target_mac_r</span><span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">                <span class="n">arp_data</span><span class="p">[</span><span class="mh">18</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">target_mac_r</span><span class="p">[</span><span class="mh">47</span><span class="o">:</span><span class="mh">40</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">                <span class="n">arp_data</span><span class="p">[</span><span class="mh">19</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">target_mac_r</span><span class="p">[</span><span class="mh">39</span><span class="o">:</span><span class="mh">32</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">                <span class="n">arp_data</span><span class="p">[</span><span class="mh">20</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">target_mac_r</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">24</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">                <span class="n">arp_data</span><span class="p">[</span><span class="mh">21</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">target_mac_r</span><span class="p">[</span><span class="mh">23</span><span class="o">:</span><span class="mh">16</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">                <span class="n">arp_data</span><span class="p">[</span><span class="mh">22</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">target_mac_r</span><span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">8</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">                <span class="n">arp_data</span><span class="p">[</span><span class="mh">23</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">target_mac_r</span><span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">                <span class="n">arp_data</span><span class="p">[</span><span class="mh">24</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">target_ip_r</span><span class="p">[</span><span class="mh">31</span><span class="o">:</span><span class="mh">24</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">                <span class="n">arp_data</span><span class="p">[</span><span class="mh">25</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">target_ip_r</span><span class="p">[</span><span class="mh">23</span><span class="o">:</span><span class="mh">16</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">                <span class="n">arp_data</span><span class="p">[</span><span class="mh">26</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">target_ip_r</span><span class="p">[</span><span class="mh">15</span><span class="o">:</span><span class="mh">8</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">                <span class="n">arp_data</span><span class="p">[</span><span class="mh">27</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">target_ip_r</span><span class="p">[</span><span class="mh">7</span><span class="o">:</span><span class="mh">0</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="n">arp_tx_type_r</span> <span class="o">==</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">arp_data</span><span class="p">[</span><span class="mh">6</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mh">8</span><span class="mi">&#39;d0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">arp_data</span><span class="p">[</span><span class="mh">7</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mh">8</span><span class="mi">&#39;d1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">arp_data</span><span class="p">[</span><span class="mh">6</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mh">8</span><span class="mi">&#39;d0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">arp_data</span><span class="p">[</span><span class="mh">7</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mh">8</span><span class="mi">&#39;d2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">PREAMBLE</span> <span class="o">:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="n">tx_cnt</span> <span class="o">==</span> <span class="mh">8</span><span class="mi">&#39;d6</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">tx_cnt</span> <span class="o">&lt;=</span> <span class="mh">8</span><span class="mi">&#39;d0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">tx_cnt</span> <span class="o">&lt;=</span> <span class="n">tx_cnt</span> <span class="o">+</span> <span class="mh">8</span><span class="mi">&#39;d1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="n">tx_cnt</span> <span class="o">==</span> <span class="mh">8</span><span class="mi">&#39;d5</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">state_done</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">state_done</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">gmii_tx_en_int</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">gmii_txd_int</span>   <span class="o">&lt;=</span> <span class="n">preamble</span><span class="p">[</span><span class="n">tx_cnt</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">SFD</span> <span class="o">:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">gmii_tx_en_int</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">gmii_txd_int</span>   <span class="o">&lt;=</span> <span class="n">preamble</span><span class="p">[</span><span class="mh">7</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">tx_cnt</span> <span class="o">&lt;=</span> <span class="mh">8</span><span class="mi">&#39;d0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">ETH_HEAD</span> <span class="o">:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="n">tx_cnt</span> <span class="o">==</span> <span class="mh">8</span><span class="mi">&#39;d13</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">tx_cnt</span> <span class="o">&lt;=</span> <span class="mh">8</span><span class="mi">&#39;d0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">tx_cnt</span> <span class="o">&lt;=</span> <span class="n">tx_cnt</span> <span class="o">+</span> <span class="mh">8</span><span class="mi">&#39;d1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="n">tx_cnt</span> <span class="o">==</span> <span class="mh">8</span><span class="mi">&#39;d12</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">state_done</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">state_done</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">gmii_tx_en_int</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">gmii_txd_int</span>   <span class="o">&lt;=</span> <span class="n">eth_head</span><span class="p">[</span><span class="n">tx_cnt</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="n">crc_en_int</span>    <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">ARP_DATA</span> <span class="o">:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="n">tx_cnt</span> <span class="o">==</span> <span class="mh">8</span><span class="mi">&#39;d45</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">tx_cnt</span> <span class="o">&lt;=</span> <span class="mh">8</span><span class="mi">&#39;d0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">tx_cnt</span> <span class="o">&lt;=</span> <span class="n">tx_cnt</span> <span class="o">+</span> <span class="mh">8</span><span class="mi">&#39;d1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="n">tx_cnt</span> <span class="o">==</span> <span class="mh">8</span><span class="mi">&#39;d44</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">state_done</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">state_done</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">gmii_tx_en_int</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="n">tx_cnt</span> <span class="o">&lt;</span> <span class="mh">8</span><span class="mi">&#39;d28</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="n">gmii_txd_int</span>   <span class="o">&lt;=</span> <span class="n">arp_data</span><span class="p">[</span><span class="n">tx_cnt</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span>
+</span></span><span class="line"><span class="cl">                <span class="n">gmii_txd_int</span>   <span class="o">&lt;=</span> <span class="mh">8</span><span class="mi">&#39;d0</span><span class="p">;</span> <span class="c1">//padding to meet minimum ethernet data length
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>                
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">        <span class="n">FCS</span> <span class="o">:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">            <span class="n">crc_en_int</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="n">tx_cnt</span> <span class="o">==</span> <span class="mh">8</span><span class="mi">&#39;d3</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">tx_cnt</span> <span class="o">&lt;=</span> <span class="mh">8</span><span class="mi">&#39;d0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">tx_done_int</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">tx_cnt</span> <span class="o">&lt;=</span> <span class="n">tx_cnt</span> <span class="o">+</span> <span class="mh">8</span><span class="mi">&#39;d1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">tx_done_int</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="n">tx_cnt</span> <span class="o">==</span> <span class="mh">8</span><span class="mi">&#39;d2</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">state_done</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">                <span class="n">state_done</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">gmii_tx_en_int</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">case</span><span class="p">(</span><span class="n">tx_cnt</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="mh">8</span><span class="mi">&#39;d0</span> <span class="o">:</span> <span class="n">gmii_txd_int</span> <span class="o">&lt;=</span> <span class="p">{</span><span class="o">~</span><span class="n">crc_next</span><span class="p">[</span><span class="mh">0</span><span class="p">],</span><span class="o">~</span><span class="n">crc_next</span><span class="p">[</span><span class="mh">1</span><span class="p">],</span><span class="o">~</span><span class="n">crc_next</span><span class="p">[</span><span class="mh">2</span><span class="p">],</span><span class="o">~</span><span class="n">crc_next</span><span class="p">[</span><span class="mh">3</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">                                        <span class="o">~</span><span class="n">crc_next</span><span class="p">[</span><span class="mh">4</span><span class="p">],</span><span class="o">~</span><span class="n">crc_next</span><span class="p">[</span><span class="mh">5</span><span class="p">],</span><span class="o">~</span><span class="n">crc_next</span><span class="p">[</span><span class="mh">6</span><span class="p">],</span><span class="o">~</span><span class="n">crc_next</span><span class="p">[</span><span class="mh">7</span><span class="p">]};</span>
+</span></span><span class="line"><span class="cl">                
+</span></span><span class="line"><span class="cl">                <span class="mh">8</span><span class="mi">&#39;d1</span> <span class="o">:</span> <span class="n">gmii_txd_int</span> <span class="o">&lt;=</span> <span class="p">{</span><span class="o">~</span><span class="n">crc_data</span><span class="p">[</span><span class="mh">16</span><span class="p">],</span><span class="o">~</span><span class="n">crc_data</span><span class="p">[</span><span class="mh">17</span><span class="p">],</span><span class="o">~</span><span class="n">crc_data</span><span class="p">[</span><span class="mh">18</span><span class="p">],</span><span class="o">~</span><span class="n">crc_data</span><span class="p">[</span><span class="mh">19</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">                                        <span class="o">~</span><span class="n">crc_data</span><span class="p">[</span><span class="mh">20</span><span class="p">],</span><span class="o">~</span><span class="n">crc_data</span><span class="p">[</span><span class="mh">21</span><span class="p">],</span><span class="o">~</span><span class="n">crc_data</span><span class="p">[</span><span class="mh">22</span><span class="p">],</span><span class="o">~</span><span class="n">crc_data</span><span class="p">[</span><span class="mh">23</span><span class="p">]};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="mh">8</span><span class="mi">&#39;d2</span> <span class="o">:</span> <span class="n">gmii_txd_int</span> <span class="o">&lt;=</span> <span class="p">{</span><span class="o">~</span><span class="n">crc_data</span><span class="p">[</span><span class="mh">8</span><span class="p">],</span><span class="o">~</span><span class="n">crc_data</span><span class="p">[</span><span class="mh">9</span><span class="p">],</span><span class="o">~</span><span class="n">crc_data</span><span class="p">[</span><span class="mh">10</span><span class="p">],</span><span class="o">~</span><span class="n">crc_data</span><span class="p">[</span><span class="mh">11</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">                                        <span class="o">~</span><span class="n">crc_data</span><span class="p">[</span><span class="mh">12</span><span class="p">],</span><span class="o">~</span><span class="n">crc_data</span><span class="p">[</span><span class="mh">13</span><span class="p">],</span><span class="o">~</span><span class="n">crc_data</span><span class="p">[</span><span class="mh">14</span><span class="p">],</span><span class="o">~</span><span class="n">crc_data</span><span class="p">[</span><span class="mh">15</span><span class="p">]};</span>
+</span></span><span class="line"><span class="cl">                <span class="mh">8</span><span class="mi">&#39;d3</span> <span class="o">:</span> <span class="n">gmii_txd_int</span> <span class="o">&lt;=</span> <span class="p">{</span><span class="o">~</span><span class="n">crc_data</span><span class="p">[</span><span class="mh">0</span><span class="p">],</span><span class="o">~</span><span class="n">crc_data</span><span class="p">[</span><span class="mh">1</span><span class="p">],</span><span class="o">~</span><span class="n">crc_data</span><span class="p">[</span><span class="mh">2</span><span class="p">],</span><span class="o">~</span><span class="n">crc_data</span><span class="p">[</span><span class="mh">3</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">                                        <span class="o">~</span><span class="n">crc_data</span><span class="p">[</span><span class="mh">4</span><span class="p">],</span><span class="o">~</span><span class="n">crc_data</span><span class="p">[</span><span class="mh">5</span><span class="p">],</span><span class="o">~</span><span class="n">crc_data</span><span class="p">[</span><span class="mh">6</span><span class="p">],</span><span class="o">~</span><span class="n">crc_data</span><span class="p">[</span><span class="mh">7</span><span class="p">]};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">default</span> <span class="o">:</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">end</span>
+</span></span><span class="line"><span class="cl">            <span class="k">endcase</span>
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">default</span> <span class="o">:</span> <span class="k">begin</span>   
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    <span class="k">endcase</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>   
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">always</span> <span class="p">@</span> <span class="p">(</span><span class="k">posedge</span> <span class="n">clk</span> <span class="k">or</span> <span class="k">negedge</span> <span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">rst_n</span><span class="p">)</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">crc_clr_int</span> <span class="o">&lt;=</span> <span class="mh">1</span><span class="mb">&#39;b0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span> <span class="k">begin</span>
+</span></span><span class="line"><span class="cl">        <span class="n">crc_clr_int</span> <span class="o">&lt;=</span> <span class="n">tx_done_int</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">end</span>
+</span></span><span class="line"><span class="cl"><span class="k">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">assign</span> <span class="n">tx_done</span>    <span class="o">=</span> <span class="n">tx_done_int</span>   <span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">assign</span> <span class="n">gmii_tx_en</span> <span class="o">=</span> <span class="n">gmii_tx_en_int</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">assign</span> <span class="n">gmii_txd</span>   <span class="o">=</span> <span class="n">gmii_txd_int</span>  <span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">assign</span> <span class="n">crc_en</span>     <span class="o">=</span> <span class="n">crc_en_int</span>    <span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">assign</span> <span class="n">crc_clr</span>    <span class="o">=</span> <span class="n">crc_clr_int</span>   <span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">endmodule</span>
+</span></span></code></pre></div><hr>
 
-<h2 class="relative group">7. ARP 缓存模块 arp_cache.v（可选）
-    <div id="7-arp-缓存模块-arp_cachev可选" class="anchor"></div>
+<h2 class="relative group">7. 仿真与调试建议
+    <div id="7-仿真与调试建议" class="anchor"></div>
     
     <span
         class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
-        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#7-arp-%e7%bc%93%e5%ad%98%e6%a8%a1%e5%9d%97-arp_cachev%e5%8f%af%e9%80%89" aria-label="Anchor">#</a>
-    </span>
-    
-</h2>
-
-<h3 class="relative group">7.1 描述
-    <div id="71-描述" class="anchor"></div>
-    
-    <span
-        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
-        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#71-%e6%8f%8f%e8%bf%b0" aria-label="Anchor">#</a>
-    </span>
-    
-</h3>
-<p><code>arp_cache</code> 用于缓存最近解析到的 IP → MAC 映射，减少频繁的 ARP Request。</p>
-
-<h3 class="relative group">7.2 功能要点
-    <div id="72-功能要点" class="anchor"></div>
-    
-    <span
-        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
-        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#72-%e5%8a%9f%e8%83%bd%e8%a6%81%e7%82%b9" aria-label="Anchor">#</a>
-    </span>
-    
-</h3>
-<ul>
-<li>支持插入/更新 ARP 条目（来自接收方向或上层配置）</li>
-<li>支持按 IP 查询（命中则返回 MAC）</li>
-<li>支持简单替换策略（如 FIFO / LRU 简化版）</li>
-</ul>
-
-<h3 class="relative group">7.3 简单表结构示例
-    <div id="73-简单表结构示例" class="anchor"></div>
-    
-    <span
-        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
-        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#73-%e7%ae%80%e5%8d%95%e8%a1%a8%e7%bb%93%e6%9e%84%e7%a4%ba%e4%be%8b" aria-label="Anchor">#</a>
-    </span>
-    
-</h3>
-<table>
-  <thead>
-      <tr>
-          <th>条目索引</th>
-          <th>IP 地址</th>
-          <th>MAC 地址</th>
-          <th>有效位</th>
-          <th>老化计数</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>0</td>
-          <td>192.168.1.1</td>
-          <td>00:11:22:33:44:55</td>
-          <td>1</td>
-          <td>10</td>
-      </tr>
-      <tr>
-          <td>1</td>
-          <td>192.168.1.10</td>
-          <td>AA:BB:CC:DD:EE:FF</td>
-          <td>1</td>
-          <td>3</td>
-      </tr>
-      <tr>
-          <td>&hellip;</td>
-          <td>&hellip;</td>
-          <td>&hellip;</td>
-          <td>&hellip;</td>
-          <td>&hellip;</td>
-      </tr>
-  </tbody>
-</table>
-<hr>
-
-<h2 class="relative group">8. 仿真与调试建议
-    <div id="8-仿真与调试建议" class="anchor"></div>
-    
-    <span
-        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
-        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#8-%e4%bb%bf%e7%9c%9f%e4%b8%8e%e8%b0%83%e8%af%95%e5%bb%ba%e8%ae%ae" aria-label="Anchor">#</a>
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#7-%e4%bb%bf%e7%9c%9f%e4%b8%8e%e8%b0%83%e8%af%95%e5%bb%ba%e8%ae%ae" aria-label="Anchor">#</a>
     </span>
     
 </h2>
@@ -2328,12 +3127,12 @@
     ></figure>
 <hr>
 
-<h2 class="relative group">9. 参考资料
-    <div id="9-参考资料" class="anchor"></div>
+<h2 class="relative group">8. 参考资料
+    <div id="8-参考资料" class="anchor"></div>
     
     <span
         class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
-        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#9-%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99" aria-label="Anchor">#</a>
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#8-%e5%8f%82%e8%80%83%e8%b5%84%e6%96%99" aria-label="Anchor">#</a>
     </span>
     
 </h2>
