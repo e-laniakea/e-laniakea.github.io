@@ -3,38 +3,26 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
 
   <url>
-    <loc>https://e-laniakea.github.io/tags/arp/</loc>
-    <lastmod>2025-11-06T00:00:00+00:00</lastmod>
-    <changefreq>always</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://e-laniakea.github.io/docs/arp/</loc>
-    <lastmod>2025-11-06T00:00:00+00:00</lastmod>
-    <changefreq>always</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
     <loc>https://e-laniakea.github.io/docs/</loc>
-    <lastmod>2025-11-06T00:00:00+00:00</lastmod>
+    <lastmod>2025-11-13T00:00:00+00:00</lastmod>
     <changefreq>always</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://e-laniakea.github.io/tags/fpga/</loc>
-    <lastmod>2025-11-06T00:00:00+00:00</lastmod>
+    <lastmod>2025-11-13T00:00:00+00:00</lastmod>
     <changefreq>always</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://e-laniakea.github.io/tags/ipv4/</loc>
-    <lastmod>2025-11-06T00:00:00+00:00</lastmod>
+    <loc>https://e-laniakea.github.io/docs/timing/</loc>
+    <lastmod>2025-11-13T00:00:00+00:00</lastmod>
     <changefreq>always</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://e-laniakea.github.io/</loc>
-    <lastmod>2025-11-06T00:00:00+00:00</lastmod>
+    <lastmod>2025-11-13T00:00:00+00:00</lastmod>
     <changefreq>always</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -59,8 +47,20 @@
     />
   </url>
   <url>
+    <loc>https://e-laniakea.github.io/tags/set_input_delay/</loc>
+    <lastmod>2025-11-13T00:00:00+00:00</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://e-laniakea.github.io/tags/set_output_delay/</loc>
+    <lastmod>2025-11-13T00:00:00+00:00</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://e-laniakea.github.io/tags/</loc>
-    <lastmod>2025-11-06T00:00:00+00:00</lastmod>
+    <lastmod>2025-11-13T00:00:00+00:00</lastmod>
     <changefreq>always</changefreq>
     <priority>0.5</priority>
     <xhtml:link
@@ -83,6 +83,36 @@
       hreflang="en"
       href="https://e-laniakea.github.io/tags/"
     />
+  </url>
+  <url>
+    <loc>https://e-laniakea.github.io/tags/timing/</loc>
+    <lastmod>2025-11-13T00:00:00+00:00</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://e-laniakea.github.io/tags/%E6%97%B6%E5%BA%8F%E5%88%86%E6%9E%90/</loc>
+    <lastmod>2025-11-13T00:00:00+00:00</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://e-laniakea.github.io/tags/arp/</loc>
+    <lastmod>2025-11-06T00:00:00+00:00</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://e-laniakea.github.io/docs/arp/</loc>
+    <lastmod>2025-11-06T00:00:00+00:00</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://e-laniakea.github.io/tags/ipv4/</loc>
+    <lastmod>2025-11-06T00:00:00+00:00</lastmod>
+    <changefreq>always</changefreq>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://e-laniakea.github.io/tags/verilog/</loc>
@@ -147,11 +177,6 @@
   <url>
     <loc>https://e-laniakea.github.io/tags/video-scaling/</loc>
     <lastmod>2025-08-31T00:00:00+00:00</lastmod>
-    <changefreq>always</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://e-laniakea.github.io/docs/timing/</loc>
     <changefreq>always</changefreq>
     <priority>0.5</priority>
   </url>

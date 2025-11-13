@@ -9,7 +9,57 @@
     <managingEditor>nuno@n9o.xyz (LANIAKEA)</managingEditor>
     <webMaster>nuno@n9o.xyz (LANIAKEA)</webMaster>
     <copyright>© 2025 LANIAKEA</copyright>
-    <lastBuildDate>Thu, 06 Nov 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://e-laniakea.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 13 Nov 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://e-laniakea.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>FPGA</title>
+      <link>https://e-laniakea.github.io/tags/fpga/</link>
+      <pubDate>Thu, 13 Nov 2025 00:00:00 +0000</pubDate>
+      <author>nuno@n9o.xyz (LANIAKEA)</author>
+      <guid>https://e-laniakea.github.io/tags/fpga/</guid>
+      <description></description>
+      
+    </item>
+    
+    <item>
+      <title>Set_input_delay</title>
+      <link>https://e-laniakea.github.io/tags/set_input_delay/</link>
+      <pubDate>Thu, 13 Nov 2025 00:00:00 +0000</pubDate>
+      <author>nuno@n9o.xyz (LANIAKEA)</author>
+      <guid>https://e-laniakea.github.io/tags/set_input_delay/</guid>
+      <description></description>
+      
+    </item>
+    
+    <item>
+      <title>Set_output_delay</title>
+      <link>https://e-laniakea.github.io/tags/set_output_delay/</link>
+      <pubDate>Thu, 13 Nov 2025 00:00:00 +0000</pubDate>
+      <author>nuno@n9o.xyz (LANIAKEA)</author>
+      <guid>https://e-laniakea.github.io/tags/set_output_delay/</guid>
+      <description></description>
+      
+    </item>
+    
+    <item>
+      <title>Timing</title>
+      <link>https://e-laniakea.github.io/tags/timing/</link>
+      <pubDate>Thu, 13 Nov 2025 00:00:00 +0000</pubDate>
+      <author>nuno@n9o.xyz (LANIAKEA)</author>
+      <guid>https://e-laniakea.github.io/tags/timing/</guid>
+      <description></description>
+      
+    </item>
+    
+    <item>
+      <title>时序分析</title>
+      <link>https://e-laniakea.github.io/tags/%E6%97%B6%E5%BA%8F%E5%88%86%E6%9E%90/</link>
+      <pubDate>Thu, 13 Nov 2025 00:00:00 +0000</pubDate>
+      <author>nuno@n9o.xyz (LANIAKEA)</author>
+      <guid>https://e-laniakea.github.io/tags/%E6%97%B6%E5%BA%8F%E5%88%86%E6%9E%90/</guid>
+      <description></description>
+      
+    </item>
     
     <item>
       <title>ARP</title>
@@ -17,16 +67,6 @@
       <pubDate>Thu, 06 Nov 2025 00:00:00 +0000</pubDate>
       <author>nuno@n9o.xyz (LANIAKEA)</author>
       <guid>https://e-laniakea.github.io/tags/arp/</guid>
-      <description></description>
-      
-    </item>
-    
-    <item>
-      <title>FPGA</title>
-      <link>https://e-laniakea.github.io/tags/fpga/</link>
-      <pubDate>Thu, 06 Nov 2025 00:00:00 +0000</pubDate>
-      <author>nuno@n9o.xyz (LANIAKEA)</author>
-      <guid>https://e-laniakea.github.io/tags/fpga/</guid>
       <description></description>
       
     </item>
